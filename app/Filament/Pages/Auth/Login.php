@@ -41,3 +41,4 @@ class Login extends BaseLogin
         return parent::isUserAllowedToAccessPanel($user);
     }
 }
+

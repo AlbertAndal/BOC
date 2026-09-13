@@ -47,3 +47,4 @@ enum IssueStatus: int implements HasLabel, HasColor
         };
     }
 }
+

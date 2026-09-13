@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Issues;
 use App\Filament\Resources\Issues\Pages\CreateIssue;
 use App\Filament\Resources\Issues\Pages\EditIssue;
 use App\Filament\Resources\Issues\Pages\ListIssues;
+use App\Filament\Resources\Issues\Pages\ViewIssue;
+use App\Filament\Resources\Issues\RelationManagers\ActionsRelationManager;
 use App\Filament\Resources\Issues\Schemas\IssueForm;
 use App\Filament\Resources\Issues\Tables\IssuesTable;
 use App\Models\Issue;
@@ -68,7 +70,7 @@ class IssueResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ActionsRelationManager::class,
         ];
     }
 
@@ -77,6 +79,7 @@ class IssueResource extends Resource
         return [
             'index' => ListIssues::route('/'),
             'create' => CreateIssue::route('/create'),
+            'view' => ViewIssue::route('/{record}'),
             'edit' => EditIssue::route('/{record}/edit'),
         ];
     }
