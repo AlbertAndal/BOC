@@ -1,167 +1,338 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        <!-- Filter Card -->
-        <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">
-                Operational Report Criteria & Filters
-            </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Report Type -->
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Select Report Type</label>
-                    <select wire:model="report_type" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="issue_summary">Issue Summary Report (All Details)</option>
-                        <option value="port_report">Port Operational Report (Resolution Rates)</option>
-                        <option value="importer_report">Importer Concern & Filing Report</option>
-                        <option value="manager_performance">Accounts Manager Performance Report</option>
-                    </select>
+        <!-- Report Type Selection Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @php
+                $reportCards = [
+                    [
+                        'id' => 'issue_summary',
+                        'title' => 'Issue Summary',
+                        'subtitle' => 'Comprehensive case logs & statuses',
+                        'icon' => 'heroicon-o-document-text',
+                    ],
+                    [
+                        'id' => 'port_report',
+                        'title' => 'Port Operational',
+                        'subtitle' => 'District resolution rates & volumes',
+                        'icon' => 'heroicon-o-map-pin',
+                    ],
+                    [
+                        'id' => 'importer_report',
+                        'title' => 'Importer Concerns',
+                        'subtitle' => 'Client dispute & filing statistics',
+                        'icon' => 'heroicon-o-building-office-2',
+                    ],
+                    [
+                        'id' => 'manager_performance',
+                        'title' => 'Manager Performance',
+                        'subtitle' => 'Case resolution turnaround & backlog',
+                        'icon' => 'heroicon-o-user-group',
+                    ],
+                ];
+            @endphp
+
+            @foreach($reportCards as $card)
+                <button
+                    type="button"
+                    wire:click="$set('report_type', '{{ $card['id'] }}')"
+                    class="relative text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer {{ $report_type === $card['id'] ? 'bg-amber-500/10 border-amber-500 dark:bg-amber-500/20 dark:border-amber-400 ring-2 ring-amber-500/30 shadow-sm' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-2xs' }}"
+                >
+                    <div class="flex items-start justify-between">
+                        <div class="p-2 rounded-lg {{ $report_type === $card['id'] ? 'bg-amber-500 text-white dark:bg-amber-400 dark:text-gray-950' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' }}">
+                            @svg($card['icon'], 'w-5 h-5')
+                        </div>
+                        @if($report_type === $card['id'])
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white dark:bg-amber-400 dark:text-gray-950">
+                                ACTIVE
+                            </span>
+                        @endif
+                    </div>
+                    <div class="mt-3">
+                        <div class="text-sm font-bold text-gray-900 dark:text-white">
+                            {{ $card['title'] }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            {{ $card['subtitle'] }}
+                        </div>
+                    </div>
+                </button>
+            @endforeach
+        </div>
+
+        <!-- Filter Criteria Section -->
+        <x-filament::section
+            icon="heroicon-o-funnel"
+            collapsible
+        >
+            <x-slot name="heading">
+                Filter Parameters
+            </x-slot>
+
+            <x-slot name="description">
+                Specify criteria to narrow down records for real-time analysis and export.
+            </x-slot>
+
+            <x-slot name="headerEnd">
+                <div class="flex items-center gap-2">
+                    <x-filament::button
+                        color="gray"
+                        size="sm"
+                        icon="heroicon-m-arrow-path"
+                        wire:click="resetFilters"
+                    >
+                        Reset
+                    </x-filament::button>
+
+                    <x-filament::button
+                        color="danger"
+                        size="sm"
+                        icon="heroicon-m-document-arrow-down"
+                        wire:click="exportPdf"
+                    >
+                        PDF
+                    </x-filament::button>
+
+                    <x-filament::button
+                        color="success"
+                        size="sm"
+                        icon="heroicon-m-table-cells"
+                        wire:click="exportCsv"
+                    >
+                        Excel / CSV
+                    </x-filament::button>
                 </div>
+            </x-slot>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
                 <!-- Year Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
-                    <select wire:model="year" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Years</option>
-                        @foreach(range(date('Y'), date('Y') - 4) as $y)
-                            <option value="{{ $y }}">{{ $y }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Reporting Year
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-calendar">
+                        <x-filament::input.select wire:model.live="year">
+                            <option value="">All Years</option>
+                            @foreach(range(date('Y'), date('Y') - 4) as $y)
+                                <option value="{{ $y }}">{{ $y }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- Month Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Month</label>
-                    <select wire:model="month" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Months</option>
-                        @for($m = 1; $m <= 12; $m++)
-                            <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 10)) }}</option>
-                        @endfor
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Reporting Month
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-calendar-days">
+                        <x-filament::input.select wire:model.live="month">
+                            <option value="">All Months</option>
+                            @for($m = 1; $m <= 12; $m++)
+                                <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 10)) }}</option>
+                            @endfor
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- Port Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Port of Entry</label>
-                    <select wire:model="port_id" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Ports</option>
-                        @foreach(\App\Models\Port::all() as $p)
-                            <option value="{{ $p->port_id }}">{{ $p->port_name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Port of Entry
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-map-pin">
+                        <x-filament::input.select wire:model.live="port_id">
+                            <option value="">All Ports</option>
+                            @foreach(\App\Models\Port::all() as $p)
+                                <option value="{{ $p->port_id }}">{{ $p->port_name }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- Importer Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Importer / Client</label>
-                    <select wire:model="importer_id" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Importers</option>
-                        @foreach(\App\Models\Importer::all() as $imp)
-                            <option value="{{ $imp->importer_id }}">{{ $imp->importer_name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Importer / Client
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-building-office-2">
+                        <x-filament::input.select wire:model.live="importer_id">
+                            <option value="">All Importers</option>
+                            @foreach(\App\Models\Importer::all() as $imp)
+                                <option value="{{ $imp->importer_id }}">{{ $imp->importer_name }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- Manager Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Accounts Manager</label>
-                    <select wire:model="assigned_manager" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Managers</option>
-                        @foreach(\App\Models\User::whereHas('role', fn($q) => $q->where('role_name', 'Accounts Manager'))->get() as $mgr)
-                            <option value="{{ $mgr->user_id }}">{{ $mgr->full_name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Accounts Manager
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-user">
+                        <x-filament::input.select wire:model.live="assigned_manager">
+                            <option value="">All Managers</option>
+                            @foreach(\App\Models\User::whereHas('role', fn($q) => $q->where('role_name', 'Accounts Manager'))->get() as $mgr)
+                                <option value="{{ $mgr->user_id }}">{{ $mgr->full_name }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- Status Filter -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                    <select wire:model="status_id" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Statuses</option>
-                        @foreach(\App\Enums\IssueStatus::cases() as $st)
-                            <option value="{{ $st->value }}">{{ $st->getLabel() }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Issue Status
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-tag">
+                        <x-filament::input.select wire:model.live="status_id">
+                            <option value="">All Statuses</option>
+                            @foreach(\App\Enums\IssueStatus::cases() as $st)
+                                <option value="{{ $st->value }}">{{ $st->getLabel() }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
 
                 <!-- BOC Office Filter -->
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Coordinated BOC Office</label>
-                    <select wire:model="boc_office" wire:change="generatePreview" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-750 focus:border-amber-500 focus:ring-amber-500">
-                        <option value="">All Coordinated Offices</option>
-                        @foreach(\App\Models\BocOffice::all() as $office)
-                            <option value="{{ $office->office_name }}">{{ $office->office_name }}</option>
-                        @endforeach
-                    </select>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                        Coordinated BOC Office
+                    </label>
+                    <x-filament::input.wrapper prefix-icon="heroicon-m-building-library">
+                        <x-filament::input.select wire:model.live="boc_office">
+                            <option value="">All Coordinated Offices</option>
+                            @foreach(\App\Models\BocOffice::all() as $office)
+                                <option value="{{ $office->office_name }}">{{ $office->office_name }}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                 </div>
             </div>
 
-            <!-- Export Buttons -->
-            <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
-                <div class="text-xs text-gray-500 dark:text-gray-400">
-                    <strong>Current Filter Scope:</strong> {{ $reportData['appliedFilters'] ?? 'All' }}
+            <!-- Active Scope Tag -->
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-1.5">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Active Criteria:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                        {{ $reportData['appliedFilters'] ?? 'All Records' }}
+                    </span>
                 </div>
-
-                <div class="flex items-center gap-3">
-                    <button wire:click="generatePreview" type="button" class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Refresh Preview
-                    </button>
-
-                    <button wire:click="exportPdf" type="button" class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Export to PDF
-                    </button>
-
-                    <button wire:click="exportCsv" type="button" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 transition shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Export to Excel/CSV
-                    </button>
+                <div wire:loading class="text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <x-filament::loading-indicator class="w-3.5 h-3.5" />
+                    <span>Updating report preview...</span>
                 </div>
             </div>
-        </div>
+        </x-filament::section>
 
-        <!-- Live Preview Table Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                <div>
-                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white">
-                        {{ $reportData['title'] ?? 'Report Preview' }}
-                    </h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        Displaying {{ count($reportData['rows'] ?? []) }} record(s) matching criteria
-                    </p>
+        <!-- Live Preview Data Table -->
+        <x-filament::section>
+            <x-slot name="heading">
+                <div class="flex items-center gap-2">
+                    <span>{{ $reportData['title'] ?? 'Report Preview' }}</span>
                 </div>
-            </div>
+            </x-slot>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
+            <x-slot name="description">
+                Displaying {{ count($reportData['rows'] ?? []) }} matched record(s) based on your selected criteria.
+            </x-slot>
+
+            <x-slot name="headerEnd">
+                <div class="flex items-center gap-2">
+                    <x-filament::badge color="info">
+                        {{ count($reportData['rows'] ?? []) }} Records
+                    </x-filament::badge>
+                </div>
+            </x-slot>
+
+            <div class="overflow-x-auto -mx-6 -mb-6">
+                <table class="w-full text-left text-xs divide-y divide-gray-200 dark:divide-gray-800">
                     <thead>
-                        <tr class="bg-gray-50 dark:bg-gray-750 text-gray-700 dark:text-gray-300 font-semibold border-b border-gray-200 dark:border-gray-700">
+                        <tr class="bg-gray-50/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 font-bold uppercase tracking-wider text-[11px]">
                             @foreach($reportData['headers'] ?? [] as $header)
-                                <th class="px-4 py-3">{{ $header }}</th>
+                                <th class="px-5 py-3.5">{{ $header }}</th>
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
                         @forelse($reportData['rows'] ?? [] as $row)
-                            <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition">
-                                @foreach($row as $cell)
-                                    <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-                                        {{ $cell }}
+                            <tr class="hover:bg-amber-500/5 dark:hover:bg-amber-500/10 transition-colors">
+                                @foreach($row as $index => $cell)
+                                    @php
+                                        $headerName = $reportData['headers'][$index] ?? '';
+                                    @endphp
+
+                                    <td class="px-5 py-3.5 text-gray-800 dark:text-gray-200 whitespace-nowrap">
+                                        @if($headerName === 'Issue #' || str_contains($headerName, 'Barcode'))
+                                            <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
+                                                {{ $cell }}
+                                            </span>
+                                        @elseif($headerName === 'Status')
+                                            @php
+                                                $statusColor = match(strtolower((string)$cell)) {
+                                                    'new' => 'info',
+                                                    'under review' => 'warning',
+                                                    'assigned' => 'primary',
+                                                    'in progress' => 'sky',
+                                                    'pending client' => 'purple',
+                                                    'pending boc coordination' => 'amber',
+                                                    'resolved' => 'success',
+                                                    'closed' => 'gray',
+                                                    'cancelled' => 'danger',
+                                                    default => 'gray',
+                                                };
+                                            @endphp
+                                            <x-filament::badge :color="$statusColor">
+                                                {{ $cell }}
+                                            </x-filament::badge>
+                                        @elseif(str_contains($headerName, 'Rate'))
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                                    <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ min(100, (int) str_replace('%', '', (string)$cell)) }}%"></div>
+                                                </div>
+                                                <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ $cell }}</span>
+                                            </div>
+                                        @elseif(str_contains($headerName, 'Overdue') && (int)$cell > 0)
+                                            <x-filament::badge color="danger">
+                                                {{ $cell }} Overdue
+                                            </x-filament::badge>
+                                        @elseif(is_numeric($cell) && !str_starts_with((string)$cell, '0'))
+                                            <span class="font-semibold">{{ $cell }}</span>
+                                        @else
+                                            <span>{{ $cell }}</span>
+                                        @endif
                                     </td>
                                 @endforeach
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ count($reportData['headers'] ?? [1]) }}" class="px-6 py-10 text-center text-gray-400 dark:text-gray-500">
-                                    No records match the current filter selection.
+                                <td colspan="{{ count($reportData['headers'] ?? [1]) }}" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center space-y-3">
+                                        <div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-400">
+                                            @svg('heroicon-o-document-magnifying-glass', 'w-8 h-8')
+                                        </div>
+                                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                            No records found matching current criteria
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
+                                            Try adjusting or resetting your filter selections above to display broader report results.
+                                        </div>
+                                        <x-filament::button
+                                            color="gray"
+                                            size="sm"
+                                            wire:click="resetFilters"
+                                        >
+                                            Reset Filters
+                                        </x-filament::button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-filament::section>
+
     </div>
 </x-filament-panels::page>

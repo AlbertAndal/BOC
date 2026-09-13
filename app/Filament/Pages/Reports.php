@@ -9,11 +9,7 @@ use App\Models\Port;
 use App\Models\User;
 use App\Services\ReportService;
 use BackedEnum;
-use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use UnitEnum;
 
 class Reports extends Page
@@ -41,12 +37,31 @@ class Reports extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isAccountsManager() ?? false;
     }
 
     public function mount(): void
     {
         $this->year = (string) date('Y');
+        $this->generatePreview();
+    }
+
+    public function updated($propertyName): void
+    {
+        $this->generatePreview();
+    }
+
+    public function resetFilters(): void
+    {
+        $this->year = (string) date('Y');
+        $this->month = null;
+        $this->port_id = null;
+        $this->importer_id = null;
+        $this->assigned_manager = null;
+        $this->status_id = null;
+        $this->boc_office = null;
+
         $this->generatePreview();
     }
 
