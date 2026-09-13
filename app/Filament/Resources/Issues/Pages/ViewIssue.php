@@ -17,3 +17,4 @@ class ViewIssue extends ViewRecord
         ];
     }
 }
+
