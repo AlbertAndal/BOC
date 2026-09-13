@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     <div class="space-y-6">
 
-        <!-- 1. Report Type Navigation Tabs -->
+        <!-- Report Type Navigation Tabs -->
         <x-filament::tabs label="Report Type">
             <x-filament::tabs.item
                 :active="$report_type === 'issue_summary'"
@@ -36,7 +36,7 @@
             </x-filament::tabs.item>
         </x-filament::tabs>
 
-        <!-- 2. Filter Parameters Section -->
+        <!-- Filter Parameters Section -->
         <x-filament::section
             icon="heroicon-o-funnel"
             collapsible
@@ -179,7 +179,7 @@
             </div>
         </x-filament::section>
 
-        <!-- 3. Live Data Preview Table -->
+        <!-- Live Data Preview Table -->
         <x-filament::section
             icon="heroicon-o-table-cells"
         >
@@ -255,7 +255,10 @@
                                 <td colspan="{{ count($reportData['headers'] ?? [1]) }}" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center space-y-3">
                                         <div class="p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-400">
-                                            @svg('heroicon-o-document-magnifying-glass', 'w-8 h-8')
+                                            <x-filament::icon
+                                                icon="heroicon-o-document-magnifying-glass"
+                                                class="w-8 h-8"
+                                            />
                                         </div>
                                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
                                             No records match current filter criteria
