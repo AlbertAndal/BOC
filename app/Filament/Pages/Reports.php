@@ -9,6 +9,8 @@ use App\Models\Port;
 use App\Models\User;
 use App\Services\ReportService;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use UnitEnum;
 
@@ -20,7 +22,7 @@ class Reports extends Page
 
     protected static ?string $navigationLabel = 'Operational Reports';
 
-    protected static ?string $title = 'System Reports & Data Exports';
+    protected static ?string $title = 'Operational Reports & Data Exports';
 
     protected string $view = 'filament.pages.reports';
 
@@ -47,6 +49,29 @@ class Reports extends Page
         $this->generatePreview();
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('resetFilters')
+                ->label('Reset Filters')
+                ->color('gray')
+                ->icon('heroicon-o-arrow-path')
+                ->action('resetFilters'),
+
+            Action::make('exportPdf')
+                ->label('Export to PDF')
+                ->color('danger')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->action('exportPdf'),
+
+            Action::make('exportCsv')
+                ->label('Export Excel / CSV')
+                ->color('success')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action('exportCsv'),
+        ];
+    }
+
     public function updated($propertyName): void
     {
         $this->generatePreview();
@@ -63,6 +88,11 @@ class Reports extends Page
         $this->boc_office = null;
 
         $this->generatePreview();
+
+        Notification::make()
+            ->title('Filters reset to default')
+            ->success()
+            ->send();
     }
 
     public function generatePreview(): void

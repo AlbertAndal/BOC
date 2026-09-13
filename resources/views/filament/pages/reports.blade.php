@@ -1,113 +1,66 @@
 <x-filament-panels::page>
     <div class="space-y-6">
 
-        <!-- Report Type Selection Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            @php
-                $reportCards = [
-                    [
-                        'id' => 'issue_summary',
-                        'title' => 'Issue Summary',
-                        'subtitle' => 'Comprehensive case logs & statuses',
-                        'icon' => 'heroicon-o-document-text',
-                    ],
-                    [
-                        'id' => 'port_report',
-                        'title' => 'Port Operational',
-                        'subtitle' => 'District resolution rates & volumes',
-                        'icon' => 'heroicon-o-map-pin',
-                    ],
-                    [
-                        'id' => 'importer_report',
-                        'title' => 'Importer Concerns',
-                        'subtitle' => 'Client dispute & filing statistics',
-                        'icon' => 'heroicon-o-building-office-2',
-                    ],
-                    [
-                        'id' => 'manager_performance',
-                        'title' => 'Manager Performance',
-                        'subtitle' => 'Case resolution turnaround & backlog',
-                        'icon' => 'heroicon-o-user-group',
-                    ],
-                ];
-            @endphp
+        <!-- 1. Report Type Navigation Tabs -->
+        <x-filament::tabs label="Report Type">
+            <x-filament::tabs.item
+                :active="$report_type === 'issue_summary'"
+                icon="heroicon-o-document-text"
+                wire:click="$set('report_type', 'issue_summary')"
+            >
+                Issue Summary Report
+            </x-filament::tabs.item>
 
-            @foreach($reportCards as $card)
-                <button
-                    type="button"
-                    wire:click="$set('report_type', '{{ $card['id'] }}')"
-                    class="relative text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer {{ $report_type === $card['id'] ? 'bg-amber-500/10 border-amber-500 dark:bg-amber-500/20 dark:border-amber-400 ring-2 ring-amber-500/30 shadow-sm' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-2xs' }}"
-                >
-                    <div class="flex items-start justify-between">
-                        <div class="p-2 rounded-lg {{ $report_type === $card['id'] ? 'bg-amber-500 text-white dark:bg-amber-400 dark:text-gray-950' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' }}">
-                            @svg($card['icon'], 'w-5 h-5')
-                        </div>
-                        @if($report_type === $card['id'])
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white dark:bg-amber-400 dark:text-gray-950">
-                                ACTIVE
-                            </span>
-                        @endif
-                    </div>
-                    <div class="mt-3">
-                        <div class="text-sm font-bold text-gray-900 dark:text-white">
-                            {{ $card['title'] }}
-                        </div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {{ $card['subtitle'] }}
-                        </div>
-                    </div>
-                </button>
-            @endforeach
-        </div>
+            <x-filament::tabs.item
+                :active="$report_type === 'port_report'"
+                icon="heroicon-o-map-pin"
+                wire:click="$set('report_type', 'port_report')"
+            >
+                Port Operational Report
+            </x-filament::tabs.item>
 
-        <!-- Filter Criteria Section -->
+            <x-filament::tabs.item
+                :active="$report_type === 'importer_report'"
+                icon="heroicon-o-building-office-2"
+                wire:click="$set('report_type', 'importer_report')"
+            >
+                Importer Concerns Report
+            </x-filament::tabs.item>
+
+            <x-filament::tabs.item
+                :active="$report_type === 'manager_performance'"
+                icon="heroicon-o-user-group"
+                wire:click="$set('report_type', 'manager_performance')"
+            >
+                Manager Performance Report
+            </x-filament::tabs.item>
+        </x-filament::tabs>
+
+        <!-- 2. Filter Parameters Section -->
         <x-filament::section
             icon="heroicon-o-funnel"
             collapsible
         >
             <x-slot name="heading">
-                Filter Parameters
+                Report Criteria & Filter Parameters
             </x-slot>
 
             <x-slot name="description">
-                Specify criteria to narrow down records for real-time analysis and export.
+                Filter by period, collection district, importer, assigned manager, or case status.
             </x-slot>
 
             <x-slot name="headerEnd">
                 <div class="flex items-center gap-2">
-                    <x-filament::button
-                        color="gray"
-                        size="sm"
-                        icon="heroicon-m-arrow-path"
-                        wire:click="resetFilters"
-                    >
-                        Reset
-                    </x-filament::button>
-
-                    <x-filament::button
-                        color="danger"
-                        size="sm"
-                        icon="heroicon-m-document-arrow-down"
-                        wire:click="exportPdf"
-                    >
-                        PDF
-                    </x-filament::button>
-
-                    <x-filament::button
-                        color="success"
-                        size="sm"
-                        icon="heroicon-m-table-cells"
-                        wire:click="exportCsv"
-                    >
-                        Excel / CSV
-                    </x-filament::button>
+                    <x-filament::badge color="info">
+                        {{ count($reportData['rows'] ?? []) }} Records Matched
+                    </x-filament::badge>
                 </div>
             </x-slot>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-1">
                 <!-- Year Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Reporting Year
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-calendar">
@@ -122,7 +75,7 @@
 
                 <!-- Month Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Reporting Month
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-calendar-days">
@@ -137,7 +90,7 @@
 
                 <!-- Port Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Port of Entry
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-map-pin">
@@ -152,7 +105,7 @@
 
                 <!-- Importer Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Importer / Client
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-building-office-2">
@@ -167,7 +120,7 @@
 
                 <!-- Manager Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Accounts Manager
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-user">
@@ -182,7 +135,7 @@
 
                 <!-- Status Filter -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Issue Status
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-tag">
@@ -197,7 +150,7 @@
 
                 <!-- BOC Office Filter -->
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1.5">
                         Coordinated BOC Office
                     </label>
                     <x-filament::input.wrapper prefix-icon="heroicon-m-building-library">
@@ -211,59 +164,51 @@
                 </div>
             </div>
 
-            <!-- Active Scope Tag -->
-            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <div class="flex items-center gap-1.5">
-                    <span class="font-medium text-gray-700 dark:text-gray-300">Active Criteria:</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <!-- Active Filter Summary & Live Indicator -->
+            <div class="mt-4 pt-3 border-t border-gray-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Applied Filter Scope:</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
                         {{ $reportData['appliedFilters'] ?? 'All Records' }}
                     </span>
                 </div>
-                <div wire:loading class="text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    <x-filament::loading-indicator class="w-3.5 h-3.5" />
-                    <span>Updating report preview...</span>
+                <div wire:loading class="text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                    <x-filament::loading-indicator class="w-4 h-4" />
+                    <span class="font-medium">Refreshing preview...</span>
                 </div>
             </div>
         </x-filament::section>
 
-        <!-- Live Preview Data Table -->
-        <x-filament::section>
+        <!-- 3. Live Data Preview Table -->
+        <x-filament::section
+            icon="heroicon-o-table-cells"
+        >
             <x-slot name="heading">
-                <div class="flex items-center gap-2">
-                    <span>{{ $reportData['title'] ?? 'Report Preview' }}</span>
-                </div>
+                {{ $reportData['title'] ?? 'Report Preview' }}
             </x-slot>
 
             <x-slot name="description">
-                Displaying {{ count($reportData['rows'] ?? []) }} matched record(s) based on your selected criteria.
+                Generated from verified database records. Use the header actions above to download official PDF or CSV files.
             </x-slot>
 
-            <x-slot name="headerEnd">
-                <div class="flex items-center gap-2">
-                    <x-filament::badge color="info">
-                        {{ count($reportData['rows'] ?? []) }} Records
-                    </x-filament::badge>
-                </div>
-            </x-slot>
-
-            <div class="overflow-x-auto -mx-6 -mb-6">
-                <table class="w-full text-left text-xs divide-y divide-gray-200 dark:divide-gray-800">
+            <div class="overflow-x-auto -mx-6 -mb-6 border-t border-gray-200 dark:border-white/10">
+                <table class="w-full text-left text-xs divide-y divide-gray-200 dark:divide-white/10">
                     <thead>
-                        <tr class="bg-gray-50/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 font-bold uppercase tracking-wider text-[11px]">
+                        <tr class="bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-200 font-bold uppercase tracking-wider text-[11px]">
                             @foreach($reportData['headers'] ?? [] as $header)
-                                <th class="px-5 py-3.5">{{ $header }}</th>
+                                <th class="px-5 py-3.5 whitespace-nowrap">{{ $header }}</th>
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-900">
+                    <tbody class="divide-y divide-gray-100 dark:divide-white/5 bg-white dark:bg-gray-900">
                         @forelse($reportData['rows'] ?? [] as $row)
-                            <tr class="hover:bg-amber-500/5 dark:hover:bg-amber-500/10 transition-colors">
+                            <tr class="hover:bg-gray-50/70 dark:hover:bg-white/5 transition-colors">
                                 @foreach($row as $index => $cell)
                                     @php
                                         $headerName = $reportData['headers'][$index] ?? '';
                                     @endphp
 
-                                    <td class="px-5 py-3.5 text-gray-800 dark:text-gray-200 whitespace-nowrap">
+                                    <td class="px-5 py-3 text-gray-800 dark:text-gray-200 whitespace-nowrap">
                                         @if($headerName === 'Issue #' || str_contains($headerName, 'Barcode'))
                                             <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">
                                                 {{ $cell }}
@@ -313,14 +258,15 @@
                                             @svg('heroicon-o-document-magnifying-glass', 'w-8 h-8')
                                         </div>
                                         <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                            No records found matching current criteria
+                                            No records match current filter criteria
                                         </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                                            Try adjusting or resetting your filter selections above to display broader report results.
+                                            Adjust or clear the filter selections above to display broader report results.
                                         </div>
                                         <x-filament::button
                                             color="gray"
                                             size="sm"
+                                            icon="heroicon-m-arrow-path"
                                             wire:click="resetFilters"
                                         >
                                             Reset Filters
