@@ -43,3 +43,4 @@ class IssuesByImporterChart extends ChartWidget
         return 'bar';
     }
 }
+

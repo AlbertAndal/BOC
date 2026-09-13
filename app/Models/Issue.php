@@ -178,7 +178,6 @@ class Issue extends Model
 
     public function actions(): HasMany
     {
-        return $this->hasMany(IssueAction::class, 'issue_id', 'issue_id');
         return $this->hasMany(IssueAction::class, 'issue_id', 'issue_id')->orderBy('action_id', 'desc');
     }
 }

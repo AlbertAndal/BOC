@@ -76,3 +76,4 @@ class BrokerIssuesTableWidget extends BaseWidget
             ]);
     }
 }
+

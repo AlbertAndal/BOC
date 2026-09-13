@@ -57,3 +57,4 @@ class RecentIssuesTableWidget extends BaseWidget
             ]);
     }
 }
+

@@ -51,3 +51,4 @@ class IssuesByPortChart extends ChartWidget
         return 'bar';
     }
 }
+

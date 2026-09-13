@@ -76,3 +76,4 @@ class ManagerStatsOverview extends BaseWidget
         ];
     }
 }
+

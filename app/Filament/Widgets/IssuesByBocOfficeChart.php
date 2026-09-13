@@ -54,3 +54,4 @@ class IssuesByBocOfficeChart extends ChartWidget
         return 'bar';
     }
 }
+

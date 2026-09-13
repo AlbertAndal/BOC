@@ -55,3 +55,4 @@ class IssuesByMonthChart extends ChartWidget
         return 'line';
     }
 }
+

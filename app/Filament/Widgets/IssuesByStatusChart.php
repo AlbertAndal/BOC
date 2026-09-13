@@ -56,3 +56,4 @@ class IssuesByStatusChart extends ChartWidget
         return 'doughnut';
     }
 }
+
