@@ -11,6 +11,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts \
     --ignore-platform-req=ext-gd
+    --ignore-platform-req=ext-intl
 
 FROM node:22-alpine AS assets
 
