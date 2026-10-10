@@ -11,6 +11,7 @@ class Port extends Model
     use HasFactory;
 
     protected $table = 'ports';
+
     protected $primaryKey = 'port_id';
 
     protected $fillable = [
@@ -23,4 +24,3 @@ class Port extends Model
         return $this->hasMany(Issue::class, 'port_id', 'port_id');
     }
 }
-

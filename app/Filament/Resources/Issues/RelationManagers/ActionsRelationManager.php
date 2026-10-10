@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Issues\RelationManagers;
 
 use App\Models\BocOffice;
+use App\Models\User;
 use Filament\Actions\CreateAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -88,10 +89,11 @@ class ActionsRelationManager extends RelationManager
                     ->label('Record New Action')
                     ->icon('heroicon-o-plus-circle')
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['performed_by'] = auth()->id();
+                        $currentUser = User::current();
+                        $data['performed_by'] = $currentUser?->user_id ?? null;
                         $timeStr = now()->format('F j, Y - g:i A');
-                        $roleName = auth()->user()?->role?->role_name ?? 'User';
-                        $userName = auth()->user()?->full_name ?? 'User';
+                        $roleName = $currentUser?->role?->role_name ?? 'User';
+                        $userName = $currentUser?->full_name ?? 'User';
                         $data['action_taken'] = "{$timeStr}: {$data['action_taken']} by {$roleName} ({$userName})";
 
                         return $data;
@@ -102,4 +104,3 @@ class ActionsRelationManager extends RelationManager
             ]);
     }
 }
-

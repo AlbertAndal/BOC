@@ -45,4 +45,3 @@ class IssueActionPolicy
         return $user->isAdmin();
     }
 }
-

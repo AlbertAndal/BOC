@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Enums\IssueStatus;
 use App\Filament\Resources\Issues\IssueResource;
 use App\Models\Issue;
+use App\Models\User;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -15,16 +16,16 @@ class ManagerAssignedIssuesTableWidget extends BaseWidget
 {
     protected static ?int $sort = 2;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAccountsManager() ?? false;
+        return User::current()?->isAccountsManager() ?? false;
     }
 
     public function table(Table $table): Table
     {
-        $userId = auth()->id();
+        $userId = User::current()?->user_id;
 
         return $table
             ->query(
@@ -40,6 +41,8 @@ class ManagerAssignedIssuesTableWidget extends BaseWidget
                 TextColumn::make('date_received')
                     ->label('Received')
                     ->date('M d, Y')
+                    ->label('Date Created')
+                    ->dateTime('M d, Y h:i A')
                     ->sortable(),
 
                 TextColumn::make('importer.importer_name')
@@ -72,4 +75,3 @@ class ManagerAssignedIssuesTableWidget extends BaseWidget
             ]);
     }
 }
-

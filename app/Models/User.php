@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     protected $table = 'users';
+
     protected $primaryKey = 'user_id';
 
     /**
@@ -61,7 +63,17 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->status === 'Active';
+        if ($this->status !== 'Active') {
+            return false;
+        }
+
+        return match ($panel->getId()) {
+            'auth' => $this->isAdmin() || $this->isAccountsManager() || $this->isCustomsBroker(),
+            'admin' => $this->isAdmin(),
+            'manager' => $this->isAccountsManager(),
+            'broker' => $this->isCustomsBroker(),
+            default => false,
+        };
     }
 
     /**
@@ -70,6 +82,13 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function getFilamentName(): string
     {
         return $this->full_name ?: $this->username ?: $this->email;
+    }
+
+    public static function current(): ?self
+    {
+        $user = Auth::user();
+
+        return $user instanceof self ? $user : null;
     }
 
     /**

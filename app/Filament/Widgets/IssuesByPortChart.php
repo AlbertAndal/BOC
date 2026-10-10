@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Port;
+use App\Models\User;
 use Filament\Widgets\ChartWidget;
 
 class IssuesByPortChart extends ChartWidget
@@ -13,7 +14,7 @@ class IssuesByPortChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getData(): array
@@ -51,4 +52,3 @@ class IssuesByPortChart extends ChartWidget
         return 'bar';
     }
 }
-

@@ -3,7 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Issues\IssueResource;
-use App\Models\Issue;
+use App\Models\User;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -13,11 +13,11 @@ class RecentIssuesTableWidget extends BaseWidget
 {
     protected static ?int $sort = 7;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     public function table(Table $table): Table
@@ -32,8 +32,8 @@ class RecentIssuesTableWidget extends BaseWidget
                     ->searchable(),
 
                 TextColumn::make('date_received')
-                    ->label('Date')
-                    ->date('M d, Y'),
+                    ->label('Date Created')
+                    ->dateTime('M d, Y h:i A'),
 
                 TextColumn::make('importer.importer_name')
                     ->label('Importer'),
@@ -57,4 +57,3 @@ class RecentIssuesTableWidget extends BaseWidget
             ]);
     }
 }
-

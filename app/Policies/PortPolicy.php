@@ -19,7 +19,7 @@ class PortPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->status === 'Active';
     }
 
     public function update(User $user, Port $port): bool
@@ -32,4 +32,3 @@ class PortPolicy
         return $user->isAdmin();
     }
 }
-

@@ -59,4 +59,3 @@ class IssuePolicy
         return $user->isAdmin();
     }
 }
-

@@ -13,14 +13,15 @@ use App\Filament\Widgets\IssuesByStatusChart;
 use App\Filament\Widgets\ManagerAssignedIssuesTableWidget;
 use App\Filament\Widgets\ManagerStatsOverview;
 use App\Filament\Widgets\RecentIssuesTableWidget;
+use App\Models\User;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends BaseDashboard
 {
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
-        $user = auth()->user();
+        $user = User::current();
 
         if ($user?->isAdmin()) {
             return 'Administrator Command Center';
@@ -37,9 +38,9 @@ class Dashboard extends BaseDashboard
         return 'Dashboard';
     }
 
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string|Htmlable
     {
-        $user = auth()->user();
+        $user = User::current();
         $name = $user?->full_name ?? 'User';
 
         if ($user?->isAdmin()) {
@@ -59,7 +60,7 @@ class Dashboard extends BaseDashboard
 
     public function getSubheading(): ?string
     {
-        $user = auth()->user();
+        $user = User::current();
 
         if ($user?->isAdmin()) {
             return 'Comprehensive operational intelligence, port statistics, and issue resolution metrics across all BOC ports.';
@@ -78,7 +79,7 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        $user = auth()->user();
+        $user = User::current();
 
         if ($user?->isAdmin()) {
             return [
@@ -109,9 +110,8 @@ class Dashboard extends BaseDashboard
         return [];
     }
 
-    public function getColumns(): int | array
+    public function getColumns(): int|array
     {
         return 2;
     }
 }
-

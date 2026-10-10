@@ -3,50 +3,56 @@
 namespace App\Filament\Pages;
 
 use App\Enums\IssueStatus;
+use App\Filament\Resources\Issues\IssueResource;
+use App\Filament\Widgets\ReportsStatsOverview;
 use App\Models\BocOffice;
-use App\Models\Importer;
-use App\Models\Port;
 use App\Models\User;
 use App\Services\ReportService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
-class Reports extends Page
+class Reports extends Page implements HasTable
 {
+    use InteractsWithTable;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-chart-bar';
 
     protected static string|UnitEnum|null $navigationGroup = 'Reporting & Analytics';
 
     protected static ?string $navigationLabel = 'Operational Reports';
 
-    protected static ?string $title = 'Operational Reports & Data Exports';
+    protected static ?string $title = 'System Reports & Data Exports';
 
     protected string $view = 'filament.pages.reports';
 
-    public ?string $report_type = 'issue_summary';
-    public ?string $year = null;
-    public ?string $month = null;
-    public ?int $port_id = null;
-    public ?int $importer_id = null;
-    public ?int $assigned_manager = null;
-    public ?int $status_id = null;
-    public ?string $boc_office = null;
-
-    public ?array $reportData = null;
-
     public static function canAccess(): bool
     {
-        $user = auth()->user();
+        $user = User::current();
+
         return $user?->isAdmin() || $user?->isAccountsManager() ?? false;
     }
 
-    public function mount(): void
+    protected function getHeaderWidgets(): array
     {
-        $this->year = (string) date('Y');
-        $this->generatePreview();
+        return [
+            ReportsStatsOverview::class,
+        ];
+    }
+
+    public function getHeaderWidgetsColumns(): int|array
+    {
+        return 4;
     }
 
     protected function getHeaderActions(): array
@@ -54,89 +60,137 @@ class Reports extends Page
         return [
             Action::make('resetFilters')
                 ->label('Reset Filters')
-                ->color('gray')
                 ->icon('heroicon-o-arrow-path')
-                ->action('resetFilters'),
+                ->color('gray')
+                ->action(function (): void {
+                    $this->resetTableFiltersForm();
 
+                    Notification::make()
+                        ->title('Filters reset')
+                        ->success()
+                        ->send();
+                }),
             Action::make('exportPdf')
                 ->label('Export to PDF')
-                ->color('danger')
                 ->icon('heroicon-o-arrow-down-tray')
-                ->action('exportPdf'),
-
+                ->color('danger')
+                ->action(fn () => ReportService::exportPdf('issue_summary', $this->getReportFilters())),
             Action::make('exportCsv')
                 ->label('Export Excel / CSV')
-                ->color('success')
                 ->icon('heroicon-o-document-arrow-down')
-                ->action('exportCsv'),
+                ->color('success')
+                ->action(fn () => ReportService::exportCsv('issue_summary', $this->getReportFilters())),
         ];
     }
 
-    public function updated($propertyName): void
+    public function table(Table $table): Table
     {
-        $this->generatePreview();
+        return $table
+            ->query(IssueResource::getEloquentQuery())
+            ->heading('Issue Summary Report')
+            ->description('Review and export the filtered issue register.')
+            ->columns([
+                TextColumn::make('issue_number')
+                    ->label('Issue Number')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->copyable(),
+                TextColumn::make('date_received')
+                    ->label('Date Received')
+                    ->date('M d, Y')
+                    ->label('Date Created')
+                    ->dateTime('M d, Y h:i A')
+                    ->sortable(),
+                TextColumn::make('importer.importer_name')
+                    ->label('Importer')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('port.port_name')
+                    ->label('Port')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('concern')
+                    ->label('Concern')
+                    ->limit(50)
+                    ->tooltip(fn ($record): string => $record->concern)
+                    ->searchable(),
+                TextColumn::make('assignedManager.full_name')
+                    ->label('Assigned Manager')
+                    ->placeholder('Unassigned')
+                    ->sortable(),
+                TextColumn::make('status_id')
+                    ->label('Status')
+                    ->badge()
+                    ->sortable(),
+                TextColumn::make('date_resolved')
+                    ->label('Date Resolved')
+                    ->date('M d, Y')
+                    ->placeholder('Pending'),
+            ])
+            ->filters([
+                SelectFilter::make('status_id')
+                    ->label('Status')
+                    ->options(IssueStatus::class),
+                SelectFilter::make('port_id')
+                    ->label('Port')
+                    ->relationship('port', 'port_name'),
+                SelectFilter::make('importer_id')
+                    ->label('Importer')
+                    ->relationship('importer', 'importer_name'),
+                SelectFilter::make('assigned_manager')
+                    ->label('Assigned Manager')
+                    ->relationship('assignedManager', 'full_name'),
+                SelectFilter::make('boc_office')
+                    ->label('BOC Office')
+                    ->options(BocOffice::pluck('office_name', 'office_name'))
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->whereHas(
+                            'actions',
+                            fn (Builder $actions): Builder => $actions->where('coordinated_office', $value),
+                        ),
+                    )),
+                SelectFilter::make('year')
+                    ->label('Year')
+                    ->options(array_combine(
+                        range((int) date('Y'), (int) date('Y') - 4),
+                        range((int) date('Y'), (int) date('Y') - 4),
+                    ))
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->whereYear('date_received', $value),
+                    )),
+                Filter::make('date_received')
+                    ->label('Date Received')
+                    ->label('Date Created')
+                    ->schema([
+                        DatePicker::make('from')->label('From'),
+                        DatePicker::make('until')->label('Until'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, string $date): Builder => $query->whereDate('date_received', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, string $date): Builder => $query->whereDate('date_received', '<=', $date))),
+            ])
+            ->defaultSort('issue_id', 'desc')
+            ->defaultPaginationPageOption(25)
+            ->paginationPageOptions([10, 25, 50, 100]);
     }
 
-    public function resetFilters(): void
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getReportFilters(): array
     {
-        $this->year = (string) date('Y');
-        $this->month = null;
-        $this->port_id = null;
-        $this->importer_id = null;
-        $this->assigned_manager = null;
-        $this->status_id = null;
-        $this->boc_office = null;
-
-        $this->generatePreview();
-
-        Notification::make()
-            ->title('Filters reset to default')
-            ->success()
-            ->send();
-    }
-
-    public function generatePreview(): void
-    {
-        $filters = [
-            'year' => $this->year,
-            'month' => $this->month,
-            'port_id' => $this->port_id,
-            'importer_id' => $this->importer_id,
-            'assigned_manager' => $this->assigned_manager,
-            'status_id' => $this->status_id,
-            'boc_office' => $this->boc_office,
+        return [
+            'year' => $this->tableFilters['year']['value'] ?? null,
+            'port_id' => $this->tableFilters['port_id']['value'] ?? null,
+            'importer_id' => $this->tableFilters['importer_id']['value'] ?? null,
+            'assigned_manager' => $this->tableFilters['assigned_manager']['value'] ?? null,
+            'status_id' => $this->tableFilters['status_id']['value'] ?? null,
+            'boc_office' => $this->tableFilters['boc_office']['value'] ?? null,
+            'date_from' => $this->tableFilters['date_received']['from'] ?? null,
+            'date_to' => $this->tableFilters['date_received']['until'] ?? null,
         ];
-
-        $this->reportData = ReportService::getReportData($this->report_type, $filters);
-    }
-
-    public function exportPdf()
-    {
-        $filters = [
-            'year' => $this->year,
-            'month' => $this->month,
-            'port_id' => $this->port_id,
-            'importer_id' => $this->importer_id,
-            'assigned_manager' => $this->assigned_manager,
-            'status_id' => $this->status_id,
-            'boc_office' => $this->boc_office,
-        ];
-
-        return ReportService::exportPdf($this->report_type, $filters);
-    }
-
-    public function exportCsv()
-    {
-        $filters = [
-            'year' => $this->year,
-            'month' => $this->month,
-            'port_id' => $this->port_id,
-            'importer_id' => $this->importer_id,
-            'assigned_manager' => $this->assigned_manager,
-            'status_id' => $this->status_id,
-            'boc_office' => $this->boc_office,
-        ];
-
-        return ReportService::exportCsv($this->report_type, $filters);
     }
 }

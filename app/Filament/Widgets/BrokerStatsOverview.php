@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\IssueStatus;
 use App\Models\Issue;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -13,12 +14,12 @@ class BrokerStatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isCustomsBroker() ?? false;
+        return User::current()?->isCustomsBroker() ?? false;
     }
 
     protected function getStats(): array
     {
-        $userId = auth()->id();
+        $userId = User::current()?->user_id;
 
         $totalSubmitted = Issue::where('created_by', $userId)->count();
         $inProgress = Issue::where('created_by', $userId)
@@ -53,4 +54,3 @@ class BrokerStatsOverview extends BaseWidget
         ];
     }
 }
-

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\IssueStatus;
 use App\Models\Issue;
-use App\Models\User;
 
 class IssueWorkflowService
 {
@@ -125,4 +124,3 @@ class IssueWorkflowService
         return $issue;
     }
 }
-

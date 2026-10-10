@@ -32,4 +32,3 @@ class BocOfficePolicy
         return $user->isAdmin();
     }
 }
-

@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\IssueStatus;
 use App\Models\Issue;
+use App\Models\User;
 use Filament\Widgets\ChartWidget;
 
 class IssuesByStatusChart extends ChartWidget
@@ -14,7 +15,7 @@ class IssuesByStatusChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getData(): array
@@ -56,4 +57,3 @@ class IssuesByStatusChart extends ChartWidget
         return 'doughnut';
     }
 }
-

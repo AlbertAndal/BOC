@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -95,7 +96,7 @@ class UsersTable
                     ->requiresConfirmation()
                     ->modalHeading('Deactivate User Account')
                     ->modalDescription('Are you sure you want to deactivate this account? They will not be able to log in.')
-                    ->visible(fn ($record) => $record->status === 'Active' && $record->user_id !== auth()->id())
+                    ->visible(fn ($record) => $record->status === 'Active' && $record->user_id !== User::current()?->user_id)
                     ->action(function ($record) {
                         $record->update(['status' => 'Inactive']);
                         Notification::make()

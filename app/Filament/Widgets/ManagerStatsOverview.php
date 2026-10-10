@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\IssueStatus;
 use App\Models\Issue;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -13,12 +14,12 @@ class ManagerStatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAccountsManager() ?? false;
+        return User::current()?->isAccountsManager() ?? false;
     }
 
     protected function getStats(): array
     {
-        $userId = auth()->id();
+        $userId = User::current()?->user_id;
 
         $newAssignments = Issue::where('assigned_manager', $userId)
             ->where('status_id', IssueStatus::Assigned)
@@ -76,4 +77,3 @@ class ManagerStatsOverview extends BaseWidget
         ];
     }
 }
-

@@ -10,6 +10,7 @@ use App\Filament\Resources\Issues\RelationManagers\ActionsRelationManager;
 use App\Filament\Resources\Issues\Schemas\IssueForm;
 use App\Filament\Resources\Issues\Tables\IssuesTable;
 use App\Models\Issue;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -26,6 +27,11 @@ class IssueResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = 'Operations';
 
     protected static ?string $recordTitleAttribute = 'issue_number';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return filament()->getCurrentOrDefaultPanel()?->getId() === 'admin';
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -46,7 +52,7 @@ class IssueResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        $user = auth()->user();
+        $user = User::current();
 
         if (! $user) {
             return $query;

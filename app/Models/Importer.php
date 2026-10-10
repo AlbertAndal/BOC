@@ -11,6 +11,7 @@ class Importer extends Model
     use HasFactory;
 
     protected $table = 'importers';
+
     protected $primaryKey = 'importer_id';
 
     protected $fillable = [
@@ -24,4 +25,3 @@ class Importer extends Model
         return $this->hasMany(Issue::class, 'importer_id', 'importer_id');
     }
 }
-

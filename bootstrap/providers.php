@@ -1,6 +1,15 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\AuthPanelProvider;
+use App\Providers\Filament\BrokerPanelProvider;
+use App\Providers\Filament\ManagerPanelProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\AdminPanelProvider::class,
+    AppServiceProvider::class,
+    AuthPanelProvider::class,
+    AdminPanelProvider::class,
+    ManagerPanelProvider::class,
+    BrokerPanelProvider::class,
 ];

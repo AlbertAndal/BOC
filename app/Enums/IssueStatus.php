@@ -5,7 +5,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum IssueStatus: int implements HasLabel, HasColor
+enum IssueStatus: int implements HasColor, HasLabel
 {
     case New = 1;
     case UnderReview = 2;
@@ -32,7 +32,7 @@ enum IssueStatus: int implements HasLabel, HasColor
         };
     }
 
-    public function getColor(): string | array | null
+    public function getColor(): string|array|null
     {
         return match ($this) {
             self::New => 'info',
@@ -47,4 +47,3 @@ enum IssueStatus: int implements HasLabel, HasColor
         };
     }
 }
-

@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Importer;
+use App\Models\User;
 use Filament\Widgets\ChartWidget;
 
 class IssuesByImporterChart extends ChartWidget
@@ -13,7 +14,7 @@ class IssuesByImporterChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getData(): array
@@ -43,4 +44,3 @@ class IssuesByImporterChart extends ChartWidget
         return 'bar';
     }
 }
-

@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Issue;
+use App\Models\User;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class IssuesByMonthChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getData(): array
@@ -55,4 +56,3 @@ class IssuesByMonthChart extends ChartWidget
         return 'line';
     }
 }
-

@@ -10,6 +10,7 @@ class BocOffice extends Model
     use HasFactory;
 
     protected $table = 'boc_offices';
+
     protected $primaryKey = 'office_id';
 
     protected $fillable = [
@@ -17,4 +18,3 @@ class BocOffice extends Model
         'location',
     ];
 }
-

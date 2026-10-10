@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Issues\Tables;
 
 use App\Enums\IssueStatus;
+use App\Filament\Resources\Issues\IssueResource;
 use App\Models\BocOffice;
+use App\Models\Issue;
 use App\Models\User;
 use App\Services\IssueWorkflowService;
 use Filament\Actions\Action;
@@ -36,6 +38,8 @@ class IssuesTable
                 TextColumn::make('date_received')
                     ->label('Date Received')
                     ->date('M d, Y')
+                    ->label('Date Created')
+                    ->dateTime('M d, Y h:i A')
                     ->sortable(),
 
                 TextColumn::make('importer.importer_name')
@@ -72,8 +76,26 @@ class IssuesTable
                 TextColumn::make('attachments')
                     ->label('Files')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => is_array($state) ? count($state) . ' file(s)' : 'None')
-                    ->color(fn ($state) => (is_array($state) && count($state) > 0) ? 'success' : 'gray'),
+                    ->state(function (Issue $record): string {
+                        $files = $record->attachments;
+                        if (empty($files) || ! is_array($files) || count($files) === 0) {
+                            return 'None';
+                        }
+
+                        $count = count($files);
+
+                        return $count.' file'.($count > 1 ? 's' : '');
+                    })
+                    ->tooltip(function (Issue $record): ?string {
+                        $files = $record->attachments;
+                        if (empty($files) || ! is_array($files) || count($files) === 0) {
+                            return null;
+                        }
+
+                        return implode(', ', array_map(fn ($file) => basename($file), $files));
+                    })
+                    ->color(fn (string $state): string => $state === 'None' ? 'gray' : 'success')
+                    ->icon(fn (string $state): ?string => $state === 'None' ? null : 'heroicon-o-paper-clip'),
 
                 TextColumn::make('created_at')
                     ->label('Created')
@@ -95,9 +117,13 @@ class IssuesTable
                     ->label('Filter by Importer')
                     ->relationship('importer', 'importer_name'),
             ])
+            ->recordUrl(fn (Issue $record): string => IssueResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->url(fn (Issue $record): string => IssueResource::getUrl('view', ['record' => $record])),
+                EditAction::make()
+                    ->url(fn (Issue $record): string => IssueResource::getUrl('edit', ['record' => $record]))
+                    ->visible(fn (Issue $record): bool => User::current()?->can('update', $record) ?? false),
 
                 // 10-Step Workflow Actions Group
                 ActionGroup::make([
@@ -106,7 +132,7 @@ class IssuesTable
                         ->label('Step 2: Intake Review')
                         ->icon('heroicon-o-clipboard-document-check')
                         ->color('warning')
-                        ->visible(fn ($record) => auth()->user()?->isAdmin() && $record->status_id === IssueStatus::New)
+                        ->visible(fn ($record) => User::current()?->isAdmin() && $record->status_id === IssueStatus::New)
                         ->requiresConfirmation()
                         ->action(function ($record) {
                             IssueWorkflowService::transition($record, 2, remarks: 'Intake documents verified by Administrator.');
@@ -118,7 +144,7 @@ class IssuesTable
                         ->label('Step 3: Assign Manager')
                         ->icon('heroicon-o-user-plus')
                         ->color('primary')
-                        ->visible(fn ($record) => auth()->user()?->isAdmin() && in_array($record->status_id, [IssueStatus::New, IssueStatus::UnderReview]))
+                        ->visible(fn ($record) => User::current()?->isAdmin() && in_array($record->status_id, [IssueStatus::New, IssueStatus::UnderReview]))
                         ->schema([
                             Select::make('assigned_manager')
                                 ->label('Select Accounts Manager')
@@ -138,7 +164,7 @@ class IssuesTable
                         ->label('Step 4: Start Assessment')
                         ->icon('heroicon-o-play')
                         ->color('info')
-                        ->visible(fn ($record) => (auth()->user()?->isAdmin() || auth()->user()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::Assigned)
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::Assigned)
                         ->action(function ($record) {
                             IssueWorkflowService::transition($record, 4, remarks: 'Preliminary assessment started by Accounts Manager.');
                             Notification::make()->title('Assessment Started')->success()->send();
@@ -149,14 +175,14 @@ class IssuesTable
                         ->label('Step 5: Request Client Info')
                         ->icon('heroicon-o-question-mark-circle')
                         ->color('purple')
-                        ->visible(fn ($record) => (auth()->user()?->isAdmin() || auth()->user()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::Assigned, IssueStatus::InProgress]))
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::Assigned, IssueStatus::InProgress]))
                         ->schema([
                             Textarea::make('remarks')
                                 ->label('Information / Documents Required from Client')
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
-                            IssueWorkflowService::transition($record, 5, remarks: 'Information requested from client: ' . $data['remarks']);
+                            IssueWorkflowService::transition($record, 5, remarks: 'Information requested from client: '.$data['remarks']);
                             Notification::make()->title('Status updated to Pending Client')->warning()->send();
                         }),
 
@@ -172,7 +198,7 @@ class IssuesTable
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
-                            IssueWorkflowService::transition($record, 6, remarks: 'Client submitted required compliance: ' . $data['remarks']);
+                            IssueWorkflowService::transition($record, 6, remarks: 'Client submitted required compliance: '.$data['remarks']);
                             Notification::make()->title('Issue returned to In Progress')->success()->send();
                         }),
 
@@ -181,7 +207,7 @@ class IssuesTable
                         ->label('Step 7: Coordinate BOC Office')
                         ->icon('heroicon-o-building-office')
                         ->color('amber')
-                        ->visible(fn ($record) => (auth()->user()?->isAdmin() || auth()->user()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::Assigned, IssueStatus::InProgress]))
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::Assigned, IssueStatus::InProgress]))
                         ->schema([
                             Select::make('boc_office')
                                 ->label('Select BOC Operating Office')
@@ -195,8 +221,8 @@ class IssuesTable
                                 ->rows(2),
                         ])
                         ->action(function ($record, array $data) {
-                            IssueWorkflowService::transition($record, 7, coordinatedOffice: $data['boc_office'], remarks: $data['action_taken'] . ' - ' . ($data['remarks'] ?? ''));
-                            Notification::make()->title('Issue endorsed to ' . $data['boc_office'])->warning()->send();
+                            IssueWorkflowService::transition($record, 7, coordinatedOffice: $data['boc_office'], remarks: $data['action_taken'].' - '.($data['remarks'] ?? ''));
+                            Notification::make()->title('Issue endorsed to '.$data['boc_office'])->warning()->send();
                         }),
 
                     // Step 8: Record Office Findings
@@ -204,14 +230,14 @@ class IssuesTable
                         ->label('Step 8: Record Office Findings')
                         ->icon('heroicon-o-document-magnifying-glass')
                         ->color('info')
-                        ->visible(fn ($record) => (auth()->user()?->isAdmin() || auth()->user()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::PendingBocCoordination)
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::PendingBocCoordination)
                         ->schema([
                             Textarea::make('findings')
                                 ->label('Office Findings / Evaluation Report')
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
-                            IssueWorkflowService::transition($record, 8, remarks: 'BOC Office findings recorded: ' . $data['findings']);
+                            IssueWorkflowService::transition($record, 8, remarks: 'BOC Office findings recorded: '.$data['findings']);
                             Notification::make()->title('Office findings recorded. In Progress')->success()->send();
                         }),
 
@@ -220,14 +246,14 @@ class IssuesTable
                         ->label('Step 9: Resolve Issue')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn ($record) => (auth()->user()?->isAdmin() || auth()->user()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::InProgress, IssueStatus::PendingBocCoordination, IssueStatus::PendingClient]))
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::InProgress, IssueStatus::PendingBocCoordination, IssueStatus::PendingClient]))
                         ->schema([
                             Textarea::make('resolution_notes')
                                 ->label('Resolution Summary & Clearance Findings')
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
-                            IssueWorkflowService::transition($record, 9, remarks: 'Issue resolved: ' . $data['resolution_notes']);
+                            IssueWorkflowService::transition($record, 9, remarks: 'Issue resolved: '.$data['resolution_notes']);
                             Notification::make()->title('Issue marked as Resolved')->success()->send();
                         }),
 
@@ -236,7 +262,7 @@ class IssuesTable
                         ->label('Step 10: Final Case Closure')
                         ->icon('heroicon-o-lock-closed')
                         ->color('gray')
-                        ->visible(fn ($record) => auth()->user()?->isAdmin() && $record->status_id === IssueStatus::Resolved)
+                        ->visible(fn ($record) => User::current()?->isAdmin() && $record->status_id === IssueStatus::Resolved)
                         ->requiresConfirmation()
                         ->modalHeading('Close Issue Case')
                         ->modalDescription('Confirming closure marks the audit trail complete.')
@@ -245,8 +271,8 @@ class IssuesTable
                             Notification::make()->title('Case Closed')->success()->send();
                         }),
                 ])
-                ->label('Workflow')
-                ->icon('heroicon-m-ellipsis-vertical'),
+                    ->label('Workflow')
+                    ->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

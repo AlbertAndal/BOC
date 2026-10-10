@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\BocOffice;
 use App\Models\IssueAction;
+use App\Models\User;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,7 @@ class IssuesByBocOfficeChart extends ChartWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getData(): array
@@ -54,4 +55,3 @@ class IssuesByBocOfficeChart extends ChartWidget
         return 'bar';
     }
 }
-

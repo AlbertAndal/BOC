@@ -3,15 +3,14 @@
 namespace App\Services;
 
 use App\Enums\IssueStatus;
-use App\Models\BocOffice;
 use App\Models\Importer;
 use App\Models\Issue;
 use App\Models\Port;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportService
@@ -27,6 +26,14 @@ class ReportService
 
         if (! empty($filters['month'])) {
             $query->whereMonth('date_received', $filters['month']);
+        }
+
+        if (! empty($filters['date_from'])) {
+            $query->whereDate('date_received', '>=', $filters['date_from']);
+        }
+
+        if (! empty($filters['date_to'])) {
+            $query->whereDate('date_received', '<=', $filters['date_to']);
         }
 
         if (! empty($filters['port_id'])) {
@@ -60,16 +67,34 @@ class ReportService
     public static function getReportData(string $reportType, array $filters): array
     {
         $filterDescriptions = [];
-        if (! empty($filters['year'])) $filterDescriptions[] = "Year: {$filters['year']}";
-        if (! empty($filters['month'])) $filterDescriptions[] = "Month: " . date('F', mktime(0, 0, 0, (int)$filters['month'], 10));
-        if (! empty($filters['port_id'])) $filterDescriptions[] = "Port: " . (Port::find($filters['port_id'])?->port_name ?? 'N/A');
-        if (! empty($filters['importer_id'])) $filterDescriptions[] = "Importer: " . (Importer::find($filters['importer_id'])?->importer_name ?? 'N/A');
-        if (! empty($filters['assigned_manager'])) $filterDescriptions[] = "Manager: " . (User::find($filters['assigned_manager'])?->full_name ?? 'N/A');
-        if (! empty($filters['status_id'])) {
-            $statusEnum = $filters['status_id'] instanceof IssueStatus ? $filters['status_id'] : IssueStatus::tryFrom((int)$filters['status_id']);
-            $filterDescriptions[] = "Status: " . ($statusEnum?->getLabel() ?? 'N/A');
+        if (! empty($filters['year'])) {
+            $filterDescriptions[] = "Year: {$filters['year']}";
         }
-        if (! empty($filters['boc_office'])) $filterDescriptions[] = "BOC Office: {$filters['boc_office']}";
+        if (! empty($filters['month'])) {
+            $filterDescriptions[] = 'Month: '.date('F', mktime(0, 0, 0, (int) $filters['month'], 10));
+        }
+        if (! empty($filters['date_from'])) {
+            $filterDescriptions[] = "Received from: {$filters['date_from']}";
+        }
+        if (! empty($filters['date_to'])) {
+            $filterDescriptions[] = "Received until: {$filters['date_to']}";
+        }
+        if (! empty($filters['port_id'])) {
+            $filterDescriptions[] = 'Port: '.(Port::find($filters['port_id'])?->port_name ?? 'N/A');
+        }
+        if (! empty($filters['importer_id'])) {
+            $filterDescriptions[] = 'Importer: '.(Importer::find($filters['importer_id'])?->importer_name ?? 'N/A');
+        }
+        if (! empty($filters['assigned_manager'])) {
+            $filterDescriptions[] = 'Manager: '.(User::find($filters['assigned_manager'])?->full_name ?? 'N/A');
+        }
+        if (! empty($filters['status_id'])) {
+            $statusEnum = $filters['status_id'] instanceof IssueStatus ? $filters['status_id'] : IssueStatus::tryFrom((int) $filters['status_id']);
+            $filterDescriptions[] = 'Status: '.($statusEnum?->getLabel() ?? 'N/A');
+        }
+        if (! empty($filters['boc_office'])) {
+            $filterDescriptions[] = "BOC Office: {$filters['boc_office']}";
+        }
 
         $appliedFiltersString = empty($filterDescriptions) ? 'All records (No filters applied)' : implode(' | ', $filterDescriptions);
 
@@ -108,7 +133,7 @@ class ReportService
                 $issue->date_received?->format('M d, Y') ?? '—',
                 $issue->importer?->importer_name ?? '—',
                 $issue->port?->port_name ?? '—',
-                \Illuminate\Support\Str::limit($issue->concern, 50),
+                Str::limit($issue->concern, 50),
                 $issue->assignedManager?->full_name ?? 'Unassigned',
                 $issue->status_id?->getLabel() ?? 'Unknown',
                 $issue->date_resolved?->format('M d, Y') ?? 'Pending',
@@ -160,7 +185,7 @@ class ReportService
                 IssueStatus::PendingBocCoordination,
             ])->count();
 
-            $rate = $total > 0 ? round(($resolved / $total) * 100, 1) . '%' : '0.0%';
+            $rate = $total > 0 ? round(($resolved / $total) * 100, 1).'%' : '0.0%';
 
             $rows[] = [
                 $port->port_name,
@@ -279,7 +304,7 @@ class ReportService
                 foreach ($resolvedIssues as $resIssue) {
                     $totalDays += $resIssue->date_received->diffInDays($resIssue->date_resolved);
                 }
-                $avgDays = round($totalDays / $resolvedIssues->count(), 1) . ' days';
+                $avgDays = round($totalDays / $resolvedIssues->count(), 1).' days';
             } else {
                 $avgDays = 'N/A';
             }
@@ -312,7 +337,7 @@ class ReportService
         $pdf = Pdf::loadView('reports.pdf', $data)
             ->setPaper('a4', 'landscape');
 
-        $filename = str_replace(' ', '_', strtolower($data['title'])) . '_' . date('Ymd_His') . '.pdf';
+        $filename = str_replace(' ', '_', strtolower($data['title'])).'_'.date('Ymd_His').'.pdf';
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
@@ -327,7 +352,7 @@ class ReportService
     public static function exportCsv(string $reportType, array $filters): StreamedResponse
     {
         $data = static::getReportData($reportType, $filters);
-        $filename = str_replace(' ', '_', strtolower($data['title'])) . '_' . date('Ymd_His') . '.csv';
+        $filename = str_replace(' ', '_', strtolower($data['title'])).'_'.date('Ymd_His').'.csv';
 
         $callback = function () use ($data) {
             $handle = fopen('php://output', 'w');
@@ -336,8 +361,8 @@ class ReportService
 
             // Write report title and filters
             fputcsv($handle, [$data['title']]);
-            fputcsv($handle, ['Generated At: ' . now()->format('Y-m-d H:i:s')]);
-            fputcsv($handle, ['Filters: ' . $data['appliedFilters']]);
+            fputcsv($handle, ['Generated At: '.now()->format('Y-m-d H:i:s')]);
+            fputcsv($handle, ['Filters: '.$data['appliedFilters']]);
             fputcsv($handle, []); // empty row
 
             // Write Headers
@@ -353,7 +378,7 @@ class ReportService
 
         return response()->streamDownload($callback, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 }

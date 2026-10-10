@@ -132,4 +132,3 @@ class Register extends BaseRegister
         return null;
     }
 }
-

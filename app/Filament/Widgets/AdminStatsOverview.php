@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\IssueStatus;
 use App\Models\Issue;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -13,7 +14,7 @@ class AdminStatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return User::current()?->isAdmin() ?? false;
     }
 
     protected function getStats(): array
@@ -56,4 +57,3 @@ class AdminStatsOverview extends BaseWidget
         ];
     }
 }
-

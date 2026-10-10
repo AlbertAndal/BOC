@@ -14,9 +14,11 @@ class Issue extends Model
     use HasFactory;
 
     protected $table = 'issues';
+
     protected $primaryKey = 'issue_id';
 
     public ?string $current_coordinated_office = null;
+
     public ?string $current_action_remarks = null;
 
     protected $fillable = [
@@ -38,6 +40,7 @@ class Issue extends Model
     {
         return [
             'date_received' => 'date',
+            'date_received' => 'datetime',
             'date_resolved' => 'datetime',
             'status_id' => IssueStatus::class,
             'attachments' => 'array',
@@ -57,18 +60,21 @@ class Issue extends Model
 
             if (empty($issue->date_received)) {
                 $issue->date_received = now()->toDateString();
+                $issue->date_received = now();
             }
 
-            if (empty($issue->created_by) && auth()->check()) {
-                $issue->created_by = auth()->id();
+            $currentUser = User::current();
+
+            if (empty($issue->created_by) && $currentUser) {
+                $issue->created_by = $currentUser->user_id;
             }
         });
 
         // 1. Log Initial Concern Submission into issue_actions
         static::created(function (Issue $issue) {
-            $user = auth()->user() ?? User::find($issue->created_by);
+            $user = User::current() ?? User::find($issue->created_by);
             $roleName = $user?->role?->role_name ?? 'Customs Broker';
-            $userName = $user?->full_name ?? 'User #' . $issue->created_by;
+            $userName = $user?->full_name ?? 'User #'.$issue->created_by;
             $timeStr = now()->format('F j, Y - g:i A');
 
             IssueAction::create([
@@ -77,7 +83,7 @@ class Issue extends Model
                 'coordinated_office' => null,
                 'action_date' => now()->toDateString(),
                 'performed_by' => $user?->user_id ?? $issue->created_by,
-                'remarks' => 'Initial concern submitted: ' . Str::limit($issue->concern, 120),
+                'remarks' => 'Initial concern submitted: '.Str::limit($issue->concern, 120),
             ]);
         });
 
@@ -89,7 +95,7 @@ class Issue extends Model
                 return;
             }
 
-            $user = auth()->user() ?? User::find($issue->created_by);
+            $user = User::current() ?? User::find($issue->created_by);
             $roleName = $user?->role?->role_name ?? 'User';
             $userName = $user?->full_name ?? 'System';
             $timeStr = now()->format('F j, Y - g:i A');
@@ -98,7 +104,7 @@ class Issue extends Model
 
             if ($issue->wasChanged('status_id')) {
                 $oldStatusRaw = $issue->getOriginal('status_id');
-                $oldStatus = $oldStatusRaw instanceof IssueStatus ? $oldStatusRaw : IssueStatus::tryFrom((int)$oldStatusRaw);
+                $oldStatus = $oldStatusRaw instanceof IssueStatus ? $oldStatusRaw : IssueStatus::tryFrom((int) $oldStatusRaw);
                 $newStatus = $issue->status_id;
                 $oldName = $oldStatus?->getLabel() ?? 'Unknown';
                 $newName = $newStatus?->getLabel() ?? 'Unknown';
@@ -112,15 +118,15 @@ class Issue extends Model
             }
 
             if ($issue->wasChanged('date_resolved') && filled($issue->date_resolved)) {
-                $actions[] = "Issue marked as Resolved";
+                $actions[] = 'Issue marked as Resolved';
             }
 
             if ($issue->wasChanged('attachments')) {
-                $actions[] = "Attachments / documents updated";
+                $actions[] = 'Attachments / documents updated';
             }
 
             if (empty($actions)) {
-                $actions[] = "Issue details updated";
+                $actions[] = 'Issue details updated';
             }
 
             $actionSummary = implode(', ', $actions);
@@ -141,8 +147,8 @@ class Issue extends Model
      */
     public static function generateIssueNumber(): string
     {
-        $prefix = 'TIO-' . date('m') . '-';
-        $lastIssue = static::where('issue_number', 'LIKE', $prefix . '%')
+        $prefix = 'TIO-'.date('m').'-';
+        $lastIssue = static::where('issue_number', 'LIKE', $prefix.'%')
             ->orderBy('issue_id', 'desc')
             ->first();
 
@@ -153,7 +159,7 @@ class Issue extends Model
             $sequence = 1;
         }
 
-        return $prefix . str_pad((string)$sequence, 3, '0', STR_PAD_LEFT);
+        return $prefix.str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
     }
 
     public function importer(): BelongsTo

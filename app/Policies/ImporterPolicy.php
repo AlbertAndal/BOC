@@ -19,7 +19,7 @@ class ImporterPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->status === 'Active';
     }
 
     public function update(User $user, Importer $importer): bool
@@ -32,4 +32,3 @@ class ImporterPolicy
         return $user->isAdmin();
     }
 }
-

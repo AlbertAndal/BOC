@@ -75,8 +75,6 @@
                     </span>
                     GOVPH
                 </span>
-                <span class="text-slate-600">|</span>
-                <span class="hidden sm:inline text-slate-400">Republic of the Philippines</span>
                 <span class="hidden md:inline text-slate-600">&bull;</span>
                 <span class="hidden md:inline text-slate-400">Department of Finance</span>
             </div>
@@ -102,10 +100,6 @@
                          class="h-16 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-200"
                          onerror="this.src='https://customs.gov.ph/wp-content/uploads/2021/04/boc-logo.png'">
                     <div class="border-l-2 border-slate-200 pl-3.5">
-                        <span class="block text-[11px] font-bold tracking-widest text-slate-500 uppercase">Republic of the Philippines</span>
-                        <span class="block text-xl font-extrabold tracking-tight text-boc-blue font-serif leading-tight">
-                            BUREAU OF CUSTOMS
-                        </span>
                         <span class="block text-xs font-semibold text-boc-goldhover uppercase tracking-wider">
                             Client Issue Tracking & Resolution Management System
                         </span>
@@ -117,8 +111,6 @@
                     <a href="#home" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">Home</a>
                     <a href="#about" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">About</a>
                     <a href="#services" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">Services</a>
-                    <a href="#workflow" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">Resolution Workflow</a>
-                    <a href="#roles" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">User Roles</a>
                     <a href="#contact" class="px-3 py-2 rounded-md hover:text-boc-blue hover:bg-slate-100 transition-colors">Helpdesk</a>
                 </nav>
 
@@ -133,7 +125,7 @@
                             Access Portal
                         </a>
                     @else
-                        <a href="{{ url('/admin/login') }}" 
+                        <a href="{{ url('/login') }}" 
                            class="inline-flex items-center px-4 py-2 text-sm font-semibold text-boc-blue bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-md transition duration-150 ease-in-out">
                             <svg class="w-4 h-4 mr-1.5 text-boc-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
@@ -141,7 +133,7 @@
                             Login
                         </a>
                         <a href="{{ url('/admin/register') }}" 
-                           class="inline-flex items-center px-4 py-2 text-sm font-bold text-slate-900 boc-gold-gradient hover:opacity-90 rounded-md shadow-sm transition duration-150 ease-in-out">
+                                    class="inline-flex h-9.5 items-center whitespace-nowrap px-4 py-2 text-sm font-semibold text-slate-900 boc-gold-gradient hover:opacity-90 rounded-md shadow-sm transition duration-150 ease-in-out">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                             </svg>
@@ -165,16 +157,14 @@
                     <a href="#home" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">Home</a>
                     <a href="#about" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">About</a>
                     <a href="#services" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">Services</a>
-                    <a href="#workflow" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">Resolution Workflow</a>
-                    <a href="#roles" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">User Roles</a>
                     <a href="#contact" class="px-3 py-2 text-slate-800 font-medium rounded-md hover:bg-slate-100">Helpdesk</a>
                 </div>
                 <div class="pt-3 border-t border-slate-200 flex flex-col gap-2">
                     @auth
                         <a href="{{ url('/admin') }}" class="w-full text-center py-2.5 font-bold text-white bg-boc-blue rounded-md">Access Portal</a>
                     @else
-                        <a href="{{ url('/admin/login') }}" class="w-full text-center py-2.5 font-semibold text-boc-blue bg-slate-100 border border-slate-300 rounded-md">Login</a>
-                        <a href="{{ url('/admin/register') }}" class="w-full text-center py-2.5 font-bold text-slate-900 boc-gold-gradient rounded-md">Create Account</a>
+                        <a href="{{ url('/login') }}" class="w-full text-center py-2.5 font-semibold text-boc-blue bg-slate-100 border border-slate-300 rounded-md">Login</a>
+                        <a href="{{ url('/register') }}" class="w-full text-center py-2.5 font-bold text-slate-900 boc-gold-gradient rounded-md">Create Account</a>
                     @endauth
                 </div>
             </div>
@@ -193,11 +183,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <!-- Left Hero Content -->
                 <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-xs font-semibold tracking-wide text-amber-300">
-                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        CUSTOMS MODERNIZATION & TRANSPARENCY PORTAL
-                    </div>
-
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black font-serif tracking-tight text-white leading-tight">
                         <span class="text-white">Track. Coordinate. Resolve.</span>
                     </h1>
@@ -206,45 +191,6 @@
                         The official centralized web-based platform of the Bureau of Customs for managing client concerns, enhancing trade facilitation, and ensuring transparent public service.
                     </p>
 
-                    <!-- Direct Call to Action Buttons -->
-                    <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="{{ url('/admin/login') }}" 
-                           class="inline-flex justify-center items-center px-7 py-3.5 text-base font-bold rounded-lg text-slate-950 boc-gold-gradient hover:opacity-95 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
-                            <span>Access Portal / Login</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                            </svg>
-                        </a>
-                        <a href="{{ url('/admin/register') }}" 
-                           class="inline-flex justify-center items-center px-7 py-3.5 text-base font-bold rounded-lg text-white bg-white/10 hover:bg-white/20 border-2 border-white/30 backdrop-blur-sm transition-all duration-200">
-                            <svg class="w-5 h-5 mr-2 text-boc-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                            </svg>
-                            <span>Create Account</span>
-                        </a>
-                    </div>
-
-                    <!-- Trust indicators / Compliance -->
-                    <div class="pt-6 border-t border-slate-700/60 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-300">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-boc-gold" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>Republic Act No. 10863 (CMTA) Compliant</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-boc-gold" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>RA 11032 Ease of Doing Business</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-boc-gold" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>100% Immutable Audit Trail</span>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Right Hero Feature Display / Portal Card -->
@@ -308,38 +254,14 @@
                         </ul>
 
                         <div class="grid grid-cols-2 gap-3 pt-2">
-                            <a href="{{ url('/admin/login') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-white bg-boc-blue hover:bg-boc-darkblue border border-boc-gold/30 transition-colors">
+                            <a href="{{ url('/login') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-white bg-boc-blue hover:bg-boc-darkblue border border-boc-gold/30 transition-colors">
                                 Sign In Now
                             </a>
-                            <a href="{{ url('/admin/register') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-slate-900 bg-boc-gold hover:bg-boc-goldhover transition-colors">
+                            <a href="{{ url('/register') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-slate-900 bg-boc-gold hover:bg-boc-goldhover transition-colors">
                                 Register as Broker
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Key Statistics Ribbon -->
-    <section class="bg-white border-b border-slate-200 py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
-                <div class="p-2">
-                    <div class="text-3xl lg:text-4xl font-extrabold text-boc-blue font-serif">17</div>
-                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Collection Districts</div>
-                </div>
-                <div class="p-2">
-                    <div class="text-3xl lg:text-4xl font-extrabold text-boc-blue font-serif">10-Step</div>
-                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Resolution Standard</div>
-                </div>
-                <div class="p-2">
-                    <div class="text-3xl lg:text-4xl font-extrabold text-boc-goldhover font-serif">24 / 7</div>
-                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Ticket Submission</div>
-                </div>
-                <div class="p-2">
-                    <div class="text-3xl lg:text-4xl font-extrabold text-boc-blue font-serif">100%</div>
-                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-1">Action Audit Trail</div>
                 </div>
             </div>
         </div>
@@ -397,7 +319,7 @@
                         </ul>
                     </div>
                     <div class="pt-4 border-t border-slate-100">
-                        <a href="{{ url('/admin/register') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
+                        <a href="{{ url('/register') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
                             Register as Broker &rarr;
                         </a>
                     </div>
@@ -442,7 +364,7 @@
                         </ul>
                     </div>
                     <div class="pt-4 border-t border-slate-100">
-                        <a href="{{ url('/admin/login') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
+                        <a href="{{ url('/login') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
                             Manager Portal &rarr;
                         </a>
                     </div>
@@ -484,7 +406,7 @@
                         </ul>
                     </div>
                     <div class="pt-4 border-t border-slate-100">
-                        <a href="{{ url('/admin/login') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
+                        <a href="{{ url('/login') }}" class="inline-flex items-center text-xs font-bold text-boc-blue hover:text-boc-gold transition-colors">
                             Executive Console &rarr;
                         </a>
                     </div>
@@ -547,61 +469,6 @@
         </div>
     </section>
 
-    <!-- Services & Strategic Pillars -->
-    <section id="services" class="py-16 lg:py-24 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-bold uppercase tracking-widest text-boc-goldhover bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                    Trade Facilitation Pillars
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-bold font-serif text-boc-blue mt-3">
-                    Services Built for Integrity & Efficiency
-                </h2>
-                <p class="text-slate-600 mt-3 text-sm sm:text-base">
-                    Strengthening public trust through digital government processes and standardized service level commitments.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-7 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-boc-blue flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 mb-2 font-serif">Port & Terminal Coordination</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">
-                        Direct inter-district communication across Port of Manila, MICP, NAIA, Cebu, Batangas, Davao, Subic, and other primary customs collection districts.
-                    </p>
-                </div>
-
-                <div class="bg-white p-7 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 mb-2 font-serif">Valuation & Classification Reviews</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">
-                        Rapid review of tariff classifications, customs value disputes, tax exemptions, and duty assessment reconsiderations pursuant to the CMTA.
-                    </p>
-                </div>
-
-                <div class="bg-white p-7 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-5">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 mb-2 font-serif">Comprehensive Audit Reports</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed">
-                        Export detailed performance metrics, port summaries, and broker concerns to standardized PDF executive reports and Excel spreadsheets.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- About Section -->
     <section id="about" class="py-16 lg:py-24 bg-white border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -641,14 +508,14 @@
                     <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-boc-gold/30">
                         <img src="{{ asset('images/boc-cover.png') }}" 
                              alt="Bureau of Customs Headquarters and Port Operations" 
-                             class="w-full h-auto object-cover max-h-[460px]"
+                             class="w-full h-auto object-cover max-h-115"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         <div class="hidden bg-boc-blue text-white p-12 text-center">
                             <img src="{{ asset('images/boc-logo.png') }}" class="h-24 mx-auto mb-4" alt="BOC Logo">
                             <h3 class="text-2xl font-serif font-bold text-boc-gold">Bureau of Customs</h3>
                             <p class="text-slate-300 text-sm mt-2">South Harbor, Port Area, Manila, Philippines</p>
                         </div>
-                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-900/60 to-transparent p-6 text-white">
+                        <div class="absolute bottom-0 inset-x-0 bg-linear-to-t from-slate-950/90 via-slate-900/60 to-transparent p-6 text-white">
                             <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Public Service Excellence</span>
                             <p class="text-sm font-semibold mt-1">Ensuring Swift, Transparent, and Professional Resolution of Every Cargo Inquiry.</p>
                         </div>
@@ -670,9 +537,6 @@
                     </p>
                 </div>
                 <div class="flex flex-col sm:flex-row lg:flex-col gap-3">
-                    <a href="{{ url('/admin/login') }}" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-bold text-slate-950 boc-gold-gradient rounded-lg shadow hover:opacity-95 text-center">
-                        Submit a Concern (Login)
-                    </a>
                     <a href="tel:+63287056000" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center">
                         <svg class="w-4 h-4 mr-2 text-boc-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -687,12 +551,11 @@
     <!-- Official GovPH Footer -->
     <footer class="bg-slate-950 text-slate-400 text-xs border-t-4 border-boc-gold py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                 <!-- Col 1: BOC Info -->
                 <div class="space-y-3">
                     <div class="flex items-center space-x-3">
                         <img src="{{ asset('images/boc-logo.png') }}" class="h-10 w-auto" alt="BOC Seal">
-                        <span class="font-serif font-bold text-sm text-white">Bureau of Customs</span>
                     </div>
                     <p class="text-slate-400 text-xs leading-relaxed">
                         South Harbor, Gate 3, Port Area, Manila 1018, Philippines
@@ -710,40 +573,17 @@
                     <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-3">Portal Navigation</h4>
                     <ul class="space-y-2 text-xs">
                         <li><a href="#home" class="hover:text-white transition-colors">Home Page</a></li>
-                        <li><a href="{{ url('/admin/login') }}" class="hover:text-white transition-colors">Portal Login</a></li>
-                        <li><a href="{{ url('/admin/register') }}" class="hover:text-white transition-colors">Broker Account Registration</a></li>
+                        <li><a href="{{ url('/login') }}" class="hover:text-white transition-colors">Portal Login</a></li>
+                        <li><a href="{{ url('/register') }}" class="hover:text-white transition-colors">Broker Account Registration</a></li>
                         <li><a href="#workflow" class="hover:text-white transition-colors">10-Step Resolution Workflow</a></li>
                         <li><a href="#roles" class="hover:text-white transition-colors">User Roles & Access Matrix</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 3: Republic Government Links -->
-                <div>
-                    <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-3">Republic of the Philippines</h4>
-                    <ul class="space-y-2 text-xs">
-                        <li><a href="https://op-proper.gov.ph" target="_blank" rel="noopener" class="hover:text-white transition-colors">Office of the President</a></li>
-                        <li><a href="https://dof.gov.ph" target="_blank" rel="noopener" class="hover:text-white transition-colors">Department of Finance (DOF)</a></li>
-                        <li><a href="https://bir.gov.ph" target="_blank" rel="noopener" class="hover:text-white transition-colors">Bureau of Internal Revenue (BIR)</a></li>
-                        <li><a href="https://tariffcommission.gov.ph" target="_blank" rel="noopener" class="hover:text-white transition-colors">Tariff Commission</a></li>
-                        <li><a href="https://www.foi.gov.ph" target="_blank" rel="noopener" class="hover:text-white transition-colors">Freedom of Information (FOI)</a></li>
-                    </ul>
-                </div>
-
-                <!-- Col 4: Legal & Transparency -->
-                <div>
-                    <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-3">Government Standards</h4>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-3">
-                        This system is operated in compliance with the National Government Portal standards and Republic Act No. 10173 (Data Privacy Act of 2012).
-                    </p>
-                    <div class="flex items-center space-x-2 text-[11px] text-slate-500">
-                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-                        <span>Security Protocol: TLS 1.3 Active</span>
-                    </div>
-                </div>
             </div>
 
             <div class="pt-8 border-t border-slate-800 text-center sm:flex sm:justify-between sm:text-left text-slate-500 text-[11px]">
-                <p>&copy; {{ date('Y') }} Republic of the Philippines &bull; Bureau of Customs. All Rights Reserved.</p>
+                <p>&copy; {{ date('Y') }} All Rights Reserved.</p>
                 <p class="mt-2 sm:mt-0">Trade Facilitation, Valuation, and Client Resolution Portal v1.0</p>
             </div>
         </div>

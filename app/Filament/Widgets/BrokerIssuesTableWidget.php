@@ -4,7 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Issues\IssueResource;
 use App\Models\Issue;
-use Filament\Actions\Action;
+use App\Models\User;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -14,16 +14,16 @@ class BrokerIssuesTableWidget extends BaseWidget
 {
     protected static ?int $sort = 2;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public static function canView(): bool
     {
-        return auth()->user()?->isCustomsBroker() ?? false;
+        return User::current()?->isCustomsBroker() ?? false;
     }
 
     public function table(Table $table): Table
     {
-        $userId = auth()->id();
+        $userId = User::current()?->user_id;
 
         return $table
             ->query(
@@ -39,6 +39,8 @@ class BrokerIssuesTableWidget extends BaseWidget
                 TextColumn::make('date_received')
                     ->label('Date Filed')
                     ->date('M d, Y')
+                    ->label('Date Created')
+                    ->dateTime('M d, Y h:i A')
                     ->sortable(),
 
                 TextColumn::make('importer.importer_name')
@@ -63,17 +65,8 @@ class BrokerIssuesTableWidget extends BaseWidget
                     ->placeholder('Pending resolution')
                     ->dateTime('M d, Y'),
             ])
-            ->headerActions([
-                Action::make('new_issue')
-                    ->label('Submit New Concern')
-                    ->icon('heroicon-o-plus')
-                    ->button()
-                    ->color('primary')
-                    ->url(fn () => IssueResource::getUrl('create')),
-            ])
             ->recordActions([
                 ViewAction::make()->url(fn ($record) => IssueResource::getUrl('view', ['record' => $record])),
             ]);
     }
 }
-

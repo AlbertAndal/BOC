@@ -11,6 +11,7 @@ class IssueAction extends Model
     use HasFactory;
 
     protected $table = 'issue_actions';
+
     protected $primaryKey = 'action_id';
 
     protected $fillable = [
@@ -39,4 +40,3 @@ class IssueAction extends Model
         return $this->belongsTo(User::class, 'performed_by', 'user_id');
     }
 }
-
