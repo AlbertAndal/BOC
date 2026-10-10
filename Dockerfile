@@ -9,7 +9,8 @@ RUN composer install \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader \
-    --no-scripts
+    --no-scripts \
+    --ignore-platform-req=ext-gd
 
 FROM node:22-alpine AS assets
 
