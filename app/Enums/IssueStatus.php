@@ -12,7 +12,7 @@ enum IssueStatus: int implements HasColor, HasLabel
     case Assigned = 3;
     case InProgress = 4;
     case PendingClient = 5;
-    case PendingBocCoordination = 6;
+    case PendingCoordination = 6;
     case Resolved = 7;
     case Closed = 8;
     case Cancelled = 9;
@@ -25,7 +25,7 @@ enum IssueStatus: int implements HasColor, HasLabel
             self::Assigned => 'Assigned',
             self::InProgress => 'In Progress',
             self::PendingClient => 'Pending Client',
-            self::PendingBocCoordination => 'Pending BOC Coordination',
+            self::PendingCoordination => 'Pending Coordination',
             self::Resolved => 'Resolved',
             self::Closed => 'Closed',
             self::Cancelled => 'Cancelled',
@@ -40,7 +40,7 @@ enum IssueStatus: int implements HasColor, HasLabel
             self::Assigned => 'primary',
             self::InProgress => 'sky',
             self::PendingClient => 'purple',
-            self::PendingBocCoordination => 'amber',
+            self::PendingCoordination => 'amber',
             self::Resolved => 'success',
             self::Closed => 'gray',
             self::Cancelled => 'danger',

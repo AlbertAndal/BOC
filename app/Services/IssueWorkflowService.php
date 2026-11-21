@@ -45,7 +45,7 @@ class IssueWorkflowService
                 'number' => 5,
                 'name' => 'Client Clarification & Proof Request',
                 'description' => 'Manager requests additional documentation, permits, or clarification from client/broker.',
-                'status' => IssueStatus::PendingClient,
+                'status' => IssueStatus::PendingCoordination,
                 'actor' => 'Accounts Manager',
             ],
             6 => [
@@ -59,7 +59,7 @@ class IssueWorkflowService
                 'number' => 7,
                 'name' => 'BOC Office Endorsement',
                 'description' => 'Manager coordinates and formally endorses the issue to the relevant BOC operating office.',
-                'status' => IssueStatus::PendingBocCoordination,
+                'status' => IssueStatus::PendingCoordination,
                 'actor' => 'Accounts Manager',
             ],
             8 => [
@@ -79,8 +79,8 @@ class IssueWorkflowService
             10 => [
                 'number' => 10,
                 'name' => 'Client Acceptance & Audit Closure',
-                'description' => 'Client confirms resolution, audit logging finalized, and issue closed.',
-                'status' => IssueStatus::Closed,
+                'description' => 'Client confirms resolution and audit logging is finalized.',
+                'status' => IssueStatus::Resolved,
                 'actor' => 'Administrator',
             ],
         ];

@@ -39,7 +39,6 @@ class Issue extends Model
     protected function casts(): array
     {
         return [
-            'date_received' => 'date',
             'date_received' => 'datetime',
             'date_resolved' => 'datetime',
             'status_id' => IssueStatus::class,

@@ -19,41 +19,48 @@ class AdminStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $newCount = Issue::where('status_id', IssueStatus::New)->count();
-        $inProgressCount = Issue::where('status_id', IssueStatus::InProgress)->count();
-        $pendingCount = Issue::whereIn('status_id', [
-            IssueStatus::UnderReview,
-            IssueStatus::PendingClient,
-            IssueStatus::PendingBocCoordination,
-        ])->count();
-        $resolvedCount = Issue::where('status_id', IssueStatus::Resolved)->count();
-        $closedCount = Issue::where('status_id', IssueStatus::Closed)->count();
+        $count = fn (IssueStatus $status): string => (string) Issue::where('status_id', $status)->count();
 
         return [
-            Stat::make('New Issues', (string) $newCount)
+            Stat::make('New', $count(IssueStatus::New))
                 ->description('Awaiting initial review')
                 ->descriptionIcon('heroicon-m-sparkles')
-                ->color('info'),
+                ->color(IssueStatus::New->getColor()),
 
-            Stat::make('In Progress', (string) $inProgressCount)
+            Stat::make('Under Review', $count(IssueStatus::UnderReview))
+                ->description('Intake verification')
+                ->descriptionIcon('heroicon-m-clipboard-document-check')
+                ->color(IssueStatus::UnderReview->getColor()),
+
+            Stat::make('Assigned', $count(IssueStatus::Assigned))
+                ->description('With an accounts manager')
+                ->descriptionIcon('heroicon-m-user-plus')
+                ->color(IssueStatus::Assigned->getColor()),
+
+            Stat::make('In Progress', $count(IssueStatus::InProgress))
                 ->description('Active assessments')
                 ->descriptionIcon('heroicon-m-arrow-path')
-                ->color('sky'),
+                ->color(IssueStatus::InProgress->getColor()),
 
-            Stat::make('Pending Actions', (string) $pendingCount)
-                ->description('Client or BOC Office holds')
+            Stat::make('Pending Coordination', $count(IssueStatus::PendingCoordination))
+                ->description('Waiting for client or BOC office')
                 ->descriptionIcon('heroicon-m-clock')
-                ->color('warning'),
+                ->color(IssueStatus::PendingCoordination->getColor()),
 
-            Stat::make('Resolved', (string) $resolvedCount)
+            Stat::make('Resolved', $count(IssueStatus::Resolved))
                 ->description('Cases resolved')
                 ->descriptionIcon('heroicon-m-check-circle')
-                ->color('success'),
+                ->color(IssueStatus::Resolved->getColor()),
 
-            Stat::make('Closed', (string) $closedCount)
-                ->description('Audit completed')
+            Stat::make('Closed', $count(IssueStatus::Closed))
+                ->description('Cases closed')
                 ->descriptionIcon('heroicon-m-lock-closed')
-                ->color('gray'),
+                ->color(IssueStatus::Closed->getColor()),
+
+            Stat::make('Cancelled', $count(IssueStatus::Cancelled))
+                ->description('Cases cancelled')
+                ->descriptionIcon('heroicon-m-x-circle')
+                ->color(IssueStatus::Cancelled->getColor()),
         ];
     }
 }

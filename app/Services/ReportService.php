@@ -175,14 +175,14 @@ class ReportService
             $baseQuery = static::applyFilters($baseQuery, $filters);
 
             $total = (clone $baseQuery)->count();
-            $resolved = (clone $baseQuery)->where('status_id', IssueStatus::Resolved)->count();
+            $resolved = (clone $baseQuery)->whereIn('status_id', [IssueStatus::Resolved, IssueStatus::Closed])->count();
             $inProgress = (clone $baseQuery)->where('status_id', IssueStatus::InProgress)->count();
             $pending = (clone $baseQuery)->whereIn('status_id', [
                 IssueStatus::New,
                 IssueStatus::UnderReview,
                 IssueStatus::Assigned,
                 IssueStatus::PendingClient,
-                IssueStatus::PendingBocCoordination,
+                IssueStatus::PendingCoordination,
             ])->count();
 
             $rate = $total > 0 ? round(($resolved / $total) * 100, 1).'%' : '0.0%';
@@ -232,14 +232,14 @@ class ReportService
             $baseQuery = static::applyFilters($baseQuery, $filters);
 
             $total = (clone $baseQuery)->count();
-            $resolved = (clone $baseQuery)->where('status_id', IssueStatus::Resolved)->count();
+            $resolved = (clone $baseQuery)->whereIn('status_id', [IssueStatus::Resolved, IssueStatus::Closed])->count();
             $inProgress = (clone $baseQuery)->where('status_id', IssueStatus::InProgress)->count();
             $pending = (clone $baseQuery)->whereIn('status_id', [
                 IssueStatus::New,
                 IssueStatus::UnderReview,
                 IssueStatus::Assigned,
                 IssueStatus::PendingClient,
-                IssueStatus::PendingBocCoordination,
+                IssueStatus::PendingCoordination,
             ])->count();
 
             $rows[] = [
@@ -286,7 +286,7 @@ class ReportService
             $baseQuery = static::applyFilters($baseQuery, $filters);
 
             $total = (clone $baseQuery)->count();
-            $resolved = (clone $baseQuery)->where('status_id', IssueStatus::Resolved)->count();
+            $resolved = (clone $baseQuery)->whereIn('status_id', [IssueStatus::Resolved, IssueStatus::Closed])->count();
             $inProgress = (clone $baseQuery)->where('status_id', IssueStatus::InProgress)->count();
             $overdue = (clone $baseQuery)
                 ->where('date_received', '<', now()->subDays(7)->toDateString())
@@ -296,7 +296,7 @@ class ReportService
             // Calculate average resolution time
             $resolvedIssues = (clone $baseQuery)
                 ->whereNotNull('date_resolved')
-                ->where('status_id', IssueStatus::Resolved)
+                ->whereIn('status_id', [IssueStatus::Resolved, IssueStatus::Closed])
                 ->get();
 
             if ($resolvedIssues->count() > 0) {

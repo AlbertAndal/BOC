@@ -183,7 +183,7 @@ class IssuesTable
                         ])
                         ->action(function ($record, array $data) {
                             IssueWorkflowService::transition($record, 5, remarks: 'Information requested from client: '.$data['remarks']);
-                            Notification::make()->title('Status updated to Pending Client')->warning()->send();
+                            Notification::make()->title('Status updated to Pending Coordination')->warning()->send();
                         }),
 
                     // Step 6: Client Response
@@ -191,7 +191,7 @@ class IssuesTable
                         ->label('Step 6: Log Client Response')
                         ->icon('heroicon-o-arrow-path')
                         ->color('sky')
-                        ->visible(fn ($record) => $record->status_id === IssueStatus::PendingClient)
+                        ->visible(fn ($record) => $record->status_id === IssueStatus::PendingCoordination)
                         ->schema([
                             Textarea::make('remarks')
                                 ->label('Client Compliance Notes')
@@ -230,7 +230,7 @@ class IssuesTable
                         ->label('Step 8: Record Office Findings')
                         ->icon('heroicon-o-document-magnifying-glass')
                         ->color('info')
-                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::PendingBocCoordination)
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && $record->status_id === IssueStatus::PendingCoordination)
                         ->schema([
                             Textarea::make('findings')
                                 ->label('Office Findings / Evaluation Report')
@@ -246,7 +246,7 @@ class IssuesTable
                         ->label('Step 9: Resolve Issue')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::InProgress, IssueStatus::PendingBocCoordination, IssueStatus::PendingClient]))
+                        ->visible(fn ($record) => (User::current()?->isAdmin() || User::current()?->user_id === $record->assigned_manager) && in_array($record->status_id, [IssueStatus::InProgress, IssueStatus::PendingCoordination]))
                         ->schema([
                             Textarea::make('resolution_notes')
                                 ->label('Resolution Summary & Clearance Findings')
@@ -257,18 +257,18 @@ class IssuesTable
                             Notification::make()->title('Issue marked as Resolved')->success()->send();
                         }),
 
-                    // Step 10: Close Issue
-                    Action::make('step10_close')
-                        ->label('Step 10: Final Case Closure')
-                        ->icon('heroicon-o-lock-closed')
-                        ->color('gray')
+                    // Step 10: Final Audit Complete
+                    Action::make('step10_complete')
+                        ->label('Step 10: Complete Audit')
+                        ->icon('heroicon-o-check-badge')
+                        ->color('success')
                         ->visible(fn ($record) => User::current()?->isAdmin() && $record->status_id === IssueStatus::Resolved)
                         ->requiresConfirmation()
-                        ->modalHeading('Close Issue Case')
-                        ->modalDescription('Confirming closure marks the audit trail complete.')
+                        ->modalHeading('Complete Issue Audit')
+                        ->modalDescription('Confirm that the resolution audit is complete.')
                         ->action(function ($record) {
-                            IssueWorkflowService::transition($record, 10, remarks: 'Case audited and formally closed.');
-                            Notification::make()->title('Case Closed')->success()->send();
+                            IssueWorkflowService::transition($record, 10, remarks: 'Resolution audit completed.');
+                            Notification::make()->title('Audit Complete')->success()->send();
                         }),
                 ])
                     ->label('Workflow')

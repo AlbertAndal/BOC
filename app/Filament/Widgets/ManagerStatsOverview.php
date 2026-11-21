@@ -30,14 +30,11 @@ class ManagerStatsOverview extends BaseWidget
             ->count();
 
         $pending = Issue::where('assigned_manager', $userId)
-            ->whereIn('status_id', [
-                IssueStatus::PendingClient,
-                IssueStatus::PendingBocCoordination,
-            ])
+            ->whereIn('status_id', [IssueStatus::PendingCoordination, IssueStatus::PendingClient])
             ->count();
 
         $resolved = Issue::where('assigned_manager', $userId)
-            ->where('status_id', IssueStatus::Resolved)
+            ->whereIn('status_id', [IssueStatus::Resolved, IssueStatus::Closed])
             ->count();
 
         $overdue = Issue::where('assigned_manager', $userId)

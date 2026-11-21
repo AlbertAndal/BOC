@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bureau of Customs | Client Issue Tracking & Resolution Management System</title>
+    <title>Bureau of Customs</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/boc-logo.png') }}">
@@ -101,7 +101,7 @@
                          onerror="this.src='https://customs.gov.ph/wp-content/uploads/2021/04/boc-logo.png'">
                     <div class="border-l-2 border-slate-200 pl-3.5">
                         <span class="block text-xs font-semibold text-boc-goldhover uppercase tracking-wider">
-                            Client Issue Tracking & Resolution Management System
+                            Top Importers Office
                         </span>
                     </div>
                 </a>
@@ -180,89 +180,14 @@
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <!-- Left Hero Content -->
-                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black font-serif tracking-tight text-white leading-tight">
-                        <span class="text-white">Track. Coordinate. Resolve.</span>
-                    </h1>
+            <div class="max-w-4xl mx-auto flex flex-col items-center gap-5 text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black font-serif text-white leading-tight">
+                    Track. Coordinate. Resolve.
+                </h1>
 
-                    <p class="text-base sm:text-lg lg:text-xl text-slate-200 leading-relaxed font-normal max-w-2xl mx-auto lg:mx-0">
-                        The official centralized web-based platform of the Bureau of Customs for managing client concerns, enhancing trade facilitation, and ensuring transparent public service.
-                    </p>
-
-                </div>
-
-                <!-- Right Hero Feature Display / Portal Card -->
-                <div class="lg:col-span-5">
-                    <div class="bg-slate-900/80 backdrop-blur-md rounded-2xl border-2 border-boc-gold/60 p-6 sm:p-8 shadow-2xl relative">
-                        <div class="absolute -top-3.5 right-6 px-3 py-1 bg-boc-gold text-slate-950 text-xs font-black rounded-full uppercase tracking-wider shadow">
-                            Official Service
-                        </div>
-
-                        <div class="flex items-center space-x-3 mb-5 pb-4 border-b border-slate-700">
-                            <div class="w-12 h-12 rounded-xl bg-boc-blue flex items-center justify-center border border-boc-gold/40">
-                                <svg class="w-6 h-6 text-boc-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold text-white">Central Resolution Desk</h3>
-                                <p class="text-xs text-slate-400">Inter-Office Coordination & Tracking</p>
-                            </div>
-                        </div>
-
-                        <!-- Sample Barcode & Issue Preview Badge -->
-                        <div class="bg-slate-950/70 rounded-xl p-4 border border-slate-800 mb-5 space-y-2.5">
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-400">Sample Reference Number</span>
-                                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-bold text-[11px]">ACTIVE RESOLUTION</span>
-                            </div>
-                            <div class="font-mono text-xl font-bold tracking-wider text-amber-300 flex items-center justify-between">
-                                <span>TIO-09-042</span>
-                                <span class="text-xs text-slate-400 font-sans font-normal">Port of Manila (POM)</span>
-                            </div>
-                            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-boc-gold h-1.5 rounded-full" style="width: 70%"></div>
-                            </div>
-                            <div class="flex justify-between text-[11px] text-slate-400">
-                                <span>Step 7: BOC Office Coordination</span>
-                                <span class="text-amber-300 font-semibold">In Progress</span>
-                            </div>
-                        </div>
-
-                        <!-- Fast Feature Bullets -->
-                        <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
-                            <li class="flex items-start">
-                                <svg class="w-4 h-4 text-emerald-400 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                <span>Automated unique barcode generation for every lodged concern</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-4 h-4 text-emerald-400 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                <span>Multi-office routing between Assessment, Assessment Div, and Port Operations</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-4 h-4 text-emerald-400 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                <span>Official PDF and Excel summary generation for trade compliance audits</span>
-                            </li>
-                        </ul>
-
-                        <div class="grid grid-cols-2 gap-3 pt-2">
-                            <a href="{{ url('/login') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-white bg-boc-blue hover:bg-boc-darkblue border border-boc-gold/30 transition-colors">
-                                Sign In Now
-                            </a>
-                            <a href="{{ url('/register') }}" class="w-full text-center py-2.5 text-xs font-bold rounded-lg text-slate-900 bg-boc-gold hover:bg-boc-goldhover transition-colors">
-                                Register as Broker
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <p class="max-w-3xl text-base sm:text-lg lg:text-xl text-slate-200 leading-relaxed">
+                    The official centralized web-based platform of the Bureau of Customs for managing client concerns, enhancing trade facilitation, and ensuring transparent public service.
+                </p>
             </div>
         </div>
     </section>
@@ -419,10 +344,7 @@
     <section id="workflow" class="py-16 lg:py-24 bg-white border-y border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-bold uppercase tracking-widest text-boc-blue bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-                    Standard Operating Procedure
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-bold font-serif text-boc-blue mt-3">
+                <h2 class="text-3xl sm:text-4xl font-bold font-serif text-boc-blue">
                     The 10-Step Issue Resolution Workflow
                 </h2>
                 <p class="text-slate-600 mt-3 text-sm sm:text-base">
@@ -485,7 +407,7 @@
                             The <strong>Bureau of Customs (BOC)</strong> is a lead agency under the Department of Finance tasked with customs administration, revenue collection, border protection, and the facilitation of international commerce.
                         </p>
                         <p>
-                            Through this centralized <strong>Client Issue Tracking & Resolution Management System</strong>, the Bureau operationalizes its commitment to Section 103 of the Customs Modernization and Tariff Act (RA 10863) and Republic Act No. 11032 (Ease of Doing Business and Efficient Government Service Delivery Act of 2018).
+                            The Bureau operationalizes its commitment to Section 103 of the Customs Modernization and Tariff Act (RA 10863) and Republic Act No. 11032 (Ease of Doing Business and Efficient Government Service Delivery Act of 2018).
                         </p>
                         <p>
                             Clients and stakeholders benefit from accountable response times, direct escalation matrices, and structured inter-agency dispute resolution.
@@ -530,18 +452,24 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                 <div class="lg:col-span-2 space-y-3">
-                    <span class="text-xs font-bold uppercase tracking-widest text-boc-gold">Bureau of Customs Helpdesk & CARES</span>
-                    <h3 class="text-2xl sm:text-3xl font-bold font-serif">Have an urgent customs clearance inquiry?</h3>
+                    <span class="text-xs font-bold uppercase tracking-widest text-boc-gold">Top Importers Action Center</span>
+                    <h3 class="text-2xl sm:text-3xl font-bold font-serif">Need assistance with importer concerns?</h3>
                     <p class="text-slate-300 text-sm leading-relaxed max-w-2xl">
-                        Authorized brokers with active registered accounts may file a ticket directly through the portal. For general public inquiries, reach out through the official BOC CARES communication channels.
+                        Contact the Top Importers Office through its hotline or official email addresses.
                     </p>
                 </div>
-                <div class="flex flex-col sm:flex-row lg:flex-col gap-3">
-                    <a href="tel:+63287056000" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center">
+                <div class="flex flex-col gap-3">
+                    <a href="tel:+63287056038" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center">
                         <svg class="w-4 h-4 mr-2 text-boc-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        BOC Hotline: (02) 8705-6000
+                        Hotline: (02) 8705-6038
+                    </a>
+                    <a href="mailto:boc.tio@customs.gov.ph" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center">
+                        boc.tio@customs.gov.ph
+                    </a>
+                    <a href="mailto:tio.actioncenter@customs.gov.ph" class="inline-flex justify-center items-center px-6 py-3.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-center">
+                        tio.actioncenter@customs.gov.ph
                     </a>
                 </div>
             </div>
@@ -559,12 +487,6 @@
                     </div>
                     <p class="text-slate-400 text-xs leading-relaxed">
                         South Harbor, Gate 3, Port Area, Manila 1018, Philippines
-                    </p>
-                    <p class="text-slate-400 text-xs">
-                        Email: <a href="mailto:boc.cares@customs.gov.ph" class="text-amber-400 hover:underline">boc.cares@customs.gov.ph</a>
-                    </p>
-                    <p class="text-slate-400 text-xs">
-                        Website: <a href="https://customs.gov.ph" target="_blank" class="text-amber-400 hover:underline">customs.gov.ph</a>
                     </p>
                 </div>
 

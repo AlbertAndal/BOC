@@ -29,7 +29,7 @@ class BrokerStatsOverview extends BaseWidget
                 IssueStatus::Assigned,
                 IssueStatus::InProgress,
                 IssueStatus::PendingClient,
-                IssueStatus::PendingBocCoordination,
+                IssueStatus::PendingCoordination,
             ])
             ->count();
         $resolved = Issue::where('created_by', $userId)

@@ -206,4 +206,26 @@ class IssueCreationTest extends TestCase
             'created_by' => $broker->user_id,
         ]);
     }
+
+    public function test_issue_status_enum_supports_closed_and_all_statuses(): void
+    {
+        $this->assertSame(8, \App\Enums\IssueStatus::Closed->value);
+        $this->assertSame('Closed', \App\Enums\IssueStatus::Closed->getLabel());
+        $this->assertSame(5, \App\Enums\IssueStatus::PendingClient->value);
+        $this->assertSame('Pending Client', \App\Enums\IssueStatus::PendingClient->getLabel());
+
+        $broker = $this->createBrokerUser();
+        $importer = Importer::create(['importer_name' => 'Test Importer']);
+        $port = Port::create(['port_name' => 'Test Port', 'location' => 'Manila']);
+
+        $issue = Issue::create([
+            'importer_id' => $importer->importer_id,
+            'port_id' => $port->port_id,
+            'concern' => 'Testing closed status',
+            'created_by' => $broker->user_id,
+            'status_id' => \App\Enums\IssueStatus::Closed,
+        ]);
+
+        $this->assertSame(\App\Enums\IssueStatus::Closed, $issue->fresh()->status_id);
+    }
 }
