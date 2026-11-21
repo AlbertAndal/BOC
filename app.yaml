@@ -1,0 +1,9 @@
+﻿kind: wasmer.io/App.v0
+name: boc
+
+jobs:
+  after_deploy:
+    trigger:
+      type: post_deployment
+    tasks:
+      - command: php artisan migrate --force
